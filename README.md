@@ -1,6 +1,6 @@
 # Plan
 
-메인 URL: https://github.com/Dohyungh/PJT-Clustering-KOSPI200
+메인 URL: https://github.com/Dohyungh/TIL-AI
 
 |날짜|계획|
 |-|-|
