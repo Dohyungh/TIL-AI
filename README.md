@@ -1,0 +1,7 @@
+# Plan
+
+메인 URL: https://github.com/Dohyungh/PJT-Clustering-KOSPI200
+
+|날짜|계획|
+|-|-|
+|6/11 ~ 6/23|PyTorch API 정독 및 TIL 매일 작성|
