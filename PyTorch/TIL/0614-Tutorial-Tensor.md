@@ -44,7 +44,7 @@ x_rand = torch.rand_like(x_data, dtype=torch.float)
 
 **torch.tensor(requires_grad=True)**
 - `requires_grad` arg를 True 로 설정해주면, 
-- torch.autograd 가 해당 tensor에 가해진 조작을 기억하고, 빠르게 미분할 수 있도록 도운다.
+- torch.autograd 가 해당 tensor에 가해진 조작을 기억하고, 빠르게 미분할 수 있도록 돕는다.
 ```python
 x = torch.tensor([[1., -1.], [1., 1.]], requires_grad=True)
 out = x.pow(2).sum()
@@ -72,7 +72,7 @@ tensor[:, 0] # 첫번째 컬럼
 tensor[..., -1] # 마지막 컬럼
 tensor[:,1] = 1
 ```
-- numpy 와 비슷한 방법을 사용 가능하다.
+- numpy 와 비슷한 방법들을 그대로 사용 가능하다.
 
 ### joining
 ```python
@@ -119,7 +119,7 @@ z2 = tensor.mul(tensor)
 - `item()` 으로 원소가 하나인 tensor 에서 그 원소를 뽑아올 수 있음
 
 ### 덮어쓰기 연산
-- 접미사로 `_`를 붙이면 자동으로 tensor 에 대입해줌
+- 접미사로 `_`를 붙이면 `=`연산자로 대입해주지 않아도 자동으로 tensor 에 대입해줌
 - `x.copy_(y)`, `x.t_()`, `x.add_(1)`
 
 
