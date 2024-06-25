@@ -41,11 +41,38 @@
 
 ## Containers
 - `Module` : 모든 nn module 들의 base class
-- `Sequential`
-- `ModuleList` : Holds submodules in a list.
-- `ModuleDict` : Holds submodules in a dictionary.
-- `ParameterList` : Holds parameters in a list.
-- `ParameterDict` : Holds parameters in a dictionary.
+- `Sequential` : 연이어 module을 연결시켜주는 컨테이너
+- `ModuleList` : 여러 모듈들을 배열 형태로 관리할 수 있게 해주는 컨테이너
+```python
+nn.ModuleList([nn.Linear(10, 10) for i in range(10)])
+```
+
+- `ModuleDict` : 여러 모듈들을 딕셔너리 형태로 관리해주는 컨테이너.
+단계별로 나누어 각 단계에 여러 선택지들을 두고 다양하게 망을 구성하고 싶을 때 유용하다.
+```python
+self.choices = nn.ModuleDict({
+         'conv': nn.Conv2d(10, 10, 3),
+         'pool': nn.MaxPool2d(3)
+})
+self.activations = nn.ModuleDict([
+         ['lrelu', nn.LeakyReLU()],
+         ['prelu', nn.PReLU()]
+])
+
+x = self.choices[choice](x)
+x = self.activations[act](x)
+```
+
+
+- `torch.nn.Parameter`
+다른 layer들이 내부적으로 가지고 있는 파라미터들을 직접 접근할 수 있게 별도로 만든 클래스이다.
+
+layer 만을 가지고 신경망을 구성할 때는 거의 사용할 일이 없으나, 그 자체의 특성은 알아두면 도움이 된다.
+1. Tensor이다.
+2. auto_grad 를 지원한다. (즉, optimizer에 직접 넣어주고, 그 결과를 반환해 다시 모델에 넣어주고가 가능하다. => 물론, layer는 이걸 자동으로 한다.)
+3. 모델을 저장할 때 같이 저장된다. (이는 유일하게 `buffer`도 갖는 특징이다.)
+     - `ParameterList` : Holds parameters in a list.
+     - `ParameterDict` : Holds parameters in a dictionary.
 
 ## Convolution Layers
 - `nn.Conv1d` : Applies a 1D convolution over an input signal composed of several input planes.
