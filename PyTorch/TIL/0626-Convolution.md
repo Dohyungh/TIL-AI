@@ -154,13 +154,13 @@ Convolution이 시작된 곳을 거슬러 올라가다 보면 좀 더 순수 수
 신호이론 분야에서는 신호가 오고, 내가 특정한 필터(kernel)을 가지고 그 신호를 변형시키는 느낌으로 convolution을 이해하는데, 그 필터를 $h(t)$라 하자.
 
 <p align="center">
-<img src="./assets/0627ConvolutionSignal.png" />
+<img src="./assets/0627ConvolutionSignal.png" style="width: 40%"/>
 <p>
 
 저 $h(t)$를 y축에 대해 뒤집어 time을 따라 이동시켜가면서 0초부터 도착하는 외부 신호에 대해 곱해야지만, 그 변형의 시간이 일치하게 된다. (어렵게 생각할 것 없이 그냥 연속해서 들어오는 신호에 대해 내가 조작을 가하려고 만든 함수를 어느 점에서부터 적용시킬 것인지 생각해보자.)
 
 <p align="center">
-<img src="./assets/0627ConvolutionSignal2.png" />
+<img src="./assets/0627ConvolutionSignal2.png" style="width: 40%"/>
 <p>
 
 
