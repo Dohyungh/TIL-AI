@@ -13,7 +13,7 @@
         1. Convolution Layers
             1. Convolution
                1. `nn.Conv#d`
-               2. `nn.ConvTranspose#d`
+               2. **`nn.ConvTranspose#d`**
 5. Automatic-Differentiation  
 6. Parameter-Optimization  
 7. model-save-load  
@@ -43,7 +43,7 @@
 </p>
 
 대략적인 계산 (delation, padding 등에 대한 고려가 없는 가장 기본 형태)은 위와 같이 진행된다.
-하나의 input 원소가 kernel을 통과하면서 그 의미가 **"확장"**된다.
+하나의 input 원소가 kernel을 통과하면서 그 의미가 **"확장"** 된다.
 
 많은 고민과 문제해결 (특히, computational overhead, memory 낭비 등) 끝에 나온 결과만을 보고 있는데, 그 과정이 다음 블로그에 잘 정리되어 있다.   
 [Deconvolution](https://analysisbugs.tistory.com/104)
