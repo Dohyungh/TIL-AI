@@ -182,7 +182,6 @@ power-average pooling 수행
 
 $$
 f(X) = \sqrt[p]{\sum_{x \in X}x^p}
-
 $$
 
 - p = $\infty$ 이면 Max Pooling
