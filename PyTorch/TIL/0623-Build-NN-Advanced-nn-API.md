@@ -145,11 +145,21 @@ layer 만을 가지고 신경망을 구성할 때는 거의 사용할 일이 없
 - `nn.AdaptiveAvgPool3d` : Applies a 3D adaptive average pooling over an input signal composed of several input planes.
 
 ## Padding Layers
+
+### Reflection
+
+거울에 비치듯 반사된 패딩. 최근 경험적으로 더 좋은 성능을 보인다는 의견이 있다.
+
+[When to use what type of padding for convolution layers?](https://stackoverflow.com/questions/44960987/when-to-use-what-type-of-padding-for-convolution-layers)
+
 - `nn.ReflectionPad1d` : Pads the input tensor using the reflection of the input boundary.
 
 - `nn.ReflectionPad2d` : Pads the input tensor using the reflection of the input boundary.
 
 - `nn.ReflectionPad3d` : Pads the input tensor using the reflection of the input boundary.
+
+### Replication
+맨 끝 데이터를 반복한다.
 
 - `nn.ReplicationPad1d` : Pads the input tensor using replication of the input boundary.
 
@@ -157,17 +167,29 @@ layer 만을 가지고 신경망을 구성할 때는 거의 사용할 일이 없
 
 - `nn.ReplicationPad3d` : Pads the input tensor using replication of the input boundary.
 
+
+### Zero padding
+
+Convolution의 0을 무시하는 (확률 = 0) 특징을 잘 반영해주며, output shape을 조정할 수 있어 가장 많이 쓰이는 padding
+
 - `nn.ZeroPad1d` : Pads the input tensor boundaries with zero.
 
 - `nn.ZeroPad2d` : Pads the input tensor boundaries with zero.
 
 - `nn.ZeroPad3d` : Pads the input tensor boundaries with zero.
 
+### Constant
+상수를 지정하고, 해당 수로 padding
+
 - `nn.ConstantPad1d` : Pads the input tensor boundaries with a constant value.
 
 - `nn.ConstantPad2d` : Pads the input tensor boundaries with a constant value.
 
 - `nn.ConstantPad3d` : Pads the input tensor boundaries with a constant value.
+
+### Circular
+
+원본데이터가 순서대로 순환하게끔 데이터를 입력해주는 padding
 
 - `nn.CircularPad1d` : Pads the input tensor using circular padding of the input boundary.
 
