@@ -6,3 +6,4 @@
 |-|-|
 |6/11 ~ 6/23|PyTorch API 정독 및 TIL 매일 작성|
 |6/25 ~ 6/30|PyTorch API 정독 및 TIL 매일 작성|
+|7/1 ~ 7/7|PyTorch API 정독 및 TIL 매일 작성|
