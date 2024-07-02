@@ -56,10 +56,107 @@
 - `nn.LogSoftmax` : Applies the log(Softmax(𝑥)) function to an n-dimensional input Tensor.
 - `nn.AdaptiveLogSoftmaxWithLoss` : Efficient softmax approximation.
 
+[Survey of Activation Functions](https://neverabandon.tistory.com/8)
+
+[wikidocs.net](https://wikidocs.net/60683)
+
+[기울기 소실(Vanishing Gradient)의 의미와 해결방법](https://heytech.tistory.com/388)
+
+[Gradient of ReLu at 0](https://discuss.pytorch.org/t/gradient-of-relu-at-0/64345/4)  
+
+[Gradients for non-differentiable functions](https://pytorch.org/docs/stable/notes/autograd.html#gradients-for-non-differentiable-functions)
+
+[Natural Gradient를 위해 보면 좋을 글](https://rlwithme.tistory.com/5)
+
+## 왜 Non-linear Activations 를 사용하는가?
+
+Linear Activation의 경우 단순한 행렬 곱인데, 이는 단순히 괄호를 풀어 계산할 경우에 단 한 개의 Activation function으로 대체가 가능하다는 의미이다. 이는 많은 층을 추가해가면서 각 층별로 활성함수가 적용되어 node들 간의 촘촘한 관계를 구현하겠다는 신경망 구현 방식과 맞지 않다.
+
+> 다만, 선형 활성함수를 사용한 층을 '은닉층'(비선형 활성함수를 사용하는) 과 구별해 '선형층'이라는 별개의 이름으로 부르기도 할 정도로 그 자체로 학습할 수 있는 weight이 생겨난다는 측면에서 의미가 아주 없지는 않다. [wikidocs.net](https://wikidocs.net/60683)
 
 ## Vanishing Gradient
 
 [기울기 소실(Vanishing Gradient)의 의미와 해결방법](https://heytech.tistory.com/388)
+
+기울기 소실이란 역전파를 이용한 weight 조정 과정에서 Chain Rule에 따라 계속해서 gradient를 곱하게 되는데, 이 gradient 값이 계속해서 작아져 입력층에 가까워졌을 때 쯤엔 0에 근사해지는 것을 의미한다.
+
+### Sigmoid 함수
+
+$$
+S(x) = \frac{1}{1+e^{-x}} = \frac{e^x}{e^x + 1}
+$$
+
+<p align="center">
+<img src="./assets/0702sigmoid.png" style="width:70%" />
+</p>
+
+
+$$
+S'(x) = S(x)(1-S(x))
+$$
+
+미분 계산의 편의성과 뉴런의 신경신호 전달 방식을 매우 가깝게 구현한다는 점에서 널리 사용됐던 Sigmoid 함수.
+그 미분은 $S(x) = 0.5$ 에서 최댓값 0.25를 가진다. 따라서, 모든 $x$의 범위 내에서 최대 0.25 , 최소 0의 값을 가지므로, 이 미분값(gradient)를 계속해서 곱하다 보면, 그 gradient는 극히 작아질 수 밖에 없다.
+
+> 이에 더해, exp(x)의 계산을 근사치로 수행해야 하는 컴퓨터의 계산오차도 역시 계속해서 가산된다.
+
+#### Bias Shift(편향 이동)
+Sigmoid 함수의 Vanishing gradient를 가속시키는 이유가 하나 더 있는데, 바로 **Bias Shift** (편향 이동) 이다.
+Sigmoid 함수의 평균은 0이 아닌 0.25인데, 이는 즉 입력값의 합보다 출력층의 합이 더 커질 확률이 높다는 의미이다. 이것은 다시, gradient의 분포가 gradient의 최댓값인 0.25를 가지는 중간부보다는 양 극단에서 관찰될 확률이 점점 커진다는 뜻이다.
+
+### $\tanh$ 함수
+
+$$
+f(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}
+$$
+
+<p align="center">
+<img src="./assets/0702tanh.png" style="width:70%" />
+</p>
+
+$$
+f'(x) = 1-f(x)^2
+$$
+
+쌍곡 탄젠트 함수는 그 형태가 sigmoid와 매우 유사하지만, 최댓값 1을 가져 sigmoid보다 훨씬 넉넉한 gradient범위를 가졌다. 그러나, 여전히 곱할 수록 작아지는 특성을 벗어나지는 못했다. 다만, Bias Shift 현상은 평균이 0이기 때문에 나타나지 않는다.
+
+### ReLU (Rectified Linear Unit) 함수
+
+$$
+f(x) = max(0, x)
+$$
+<p align="center">
+<img src="./assets/0702ReLU.png" style="width:70%" />
+</p>
+
+0보다 큰 범위에서 기울기 1, 작은 범위에서 0의 기울기를 가진다. 
+
+> 0에서는 0을 대입하는 것이 일반적인 듯 하다.   
+[Gradient of ReLu at 0](https://discuss.pytorch.org/t/gradient-of-relu-at-0/64345/4)  
+[Gradients for non-differentiable functions](https://pytorch.org/docs/stable/notes/autograd.html#gradients-for-non-differentiable-functions)
+
+따라서, vanishing gradient 문제는 해결되었지만, 활성함수를 통과하지 못한 노드는 0이 곱해져 다시는 활성화 되지 못한다는 (Dying ReLU) 단점이 있습니다.
+
+### Leaky ReLU 함수
+
+$$
+LeakyReLU(x) = max(0,x) + negative\_slope * min(0,x)
+$$
+
+<p align="center">
+<img src="./assets/0702LeakyReLU.png" style="width:70%" />
+</p>
+
+ReLU 함수의 단점을 보완하기 위해 음의 입력이 들어왔을 떄, 0이 아닌 매우 작은 기울기를 곱한다. 이로써, 뉴런이 죽는 것을 예방한다.
+
+---
+
+[Survey of Activation Functions](https://neverabandon.tistory.com/8) : 각종 활성함수들에 대해 잘 정리해 놓은 글
+
+
+<p align="center">
+<img src="./assets/0702FamilyOfActivationFunctions.png" style="width:70%" />
+</p>
 
 ## Exponential Linear Unit (ELU) function, element-wise.
 
@@ -75,10 +172,25 @@ ELU(x) = \begin{cases}
 \end{cases}
 $$
 
+$$
+ELU'(x) = \begin{cases}
+1 &\text{if } x \gt0 \\
+f(x) + \alpha &\text{if } x\leq 0
+\end{cases}
+$$
 
+> ReLU 함수를 부드럽게 깎은 함수, $\alpha$는 대체로 1
 
 ### ELU, LReLU, ReLU, SReLU 비교
 <p align="center">
 <img src="./assets/0701ELU.png" style="width:70%" />
 </p>
+
+### 특징
+- ReLU와 LReLU가 그랬던 것처럼, 양수 input을 받았을 때 기울기가 1이어서 vanishing gradinet를 예방한다.
+- ReLU가 음수 input에 대해서 단순히 0의 값을 취하는 것에 반해 ELU는 음수의 값을 취한다. 이는 Mean activations을 0으로 (일종의 편향이동 관점) 밀어줌으로써 gradient가 natural gradient(분포의 관점에서의 gradient) 에 더 가까워 지게 해 더 빠른 학습이 가능하도록 한다.
+> - negative 체제(regime)에서 분명한 saturation 고원(plateau)을 가지고 있기 때문에, 보다 강건한 표현(representations)을 학습할 수 있음. 특히 5개 layer 이상의 특정한 network 구조를 가진 ReLU 및 LReLU에 비해 좀 더 빠른 학습 속도와 좀 더 나은 일반화(generalization)를 제공함. 또한, ReLU의 변종들에 비해 state-of-the-art 결과를 보장함.(??????) [출처](https://neverabandon.tistory.com/8)
+
+[Natural Gradient를 위해 보면 좋을 글](https://rlwithme.tistory.com/5)
+
 
