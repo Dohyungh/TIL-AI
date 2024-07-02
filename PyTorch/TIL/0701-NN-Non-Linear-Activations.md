@@ -87,7 +87,7 @@ S(x) = \frac{1}{1+e^{-x}} = \frac{e^x}{e^x + 1}
 $$
 
 <p align="center">
-<img src="./assets/0702sigmoid.png" style="width:70%" />
+<img src="./assets/0702sigmoid.png" style="width:35%" />
 </p>
 
 
@@ -111,7 +111,7 @@ f(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}
 $$
 
 <p align="center">
-<img src="./assets/0702tanh.png" style="width:70%" />
+<img src="./assets/0702tanh.png" style="width:35%" />
 </p>
 
 $$
@@ -126,7 +126,7 @@ $$
 f(x) = max(0, x)
 $$
 <p align="center">
-<img src="./assets/0702ReLU.png" style="width:70%" />
+<img src="./assets/0702ReLU.png" style="width:35%" />
 </p>
 
 0보다 큰 범위에서 기울기 1, 작은 범위에서 0의 기울기를 가진다. 
@@ -144,7 +144,7 @@ LeakyReLU(x) = max(0,x) + negative\_slope * min(0,x)
 $$
 
 <p align="center">
-<img src="./assets/0702LeakyReLU.png" style="width:70%" />
+<img src="./assets/0702LeakyReLu.png" style="width:35%" />
 </p>
 
 ReLU 함수의 단점을 보완하기 위해 음의 입력이 들어왔을 떄, 0이 아닌 매우 작은 기울기를 곱한다. 이로써, 뉴런이 죽는 것을 예방한다.
@@ -155,7 +155,7 @@ ReLU 함수의 단점을 보완하기 위해 음의 입력이 들어왔을 떄, 
 
 
 <p align="center">
-<img src="./assets/0702FamilyOfActivationFunctions.png" style="width:70%" />
+<img src="./assets/0702FamilyOfActivationFunctions.png" style="width:60%" />
 </p>
 
 ## Exponential Linear Unit (ELU) function, element-wise.
@@ -183,7 +183,7 @@ $$
 
 ### ELU, LReLU, ReLU, SReLU 비교
 <p align="center">
-<img src="./assets/0701ELU.png" style="width:70%" />
+<img src="./assets/0701ELU.png" style="width:35%" />
 </p>
 
 ### 특징
