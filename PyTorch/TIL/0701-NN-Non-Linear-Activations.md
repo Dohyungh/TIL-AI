@@ -22,11 +22,11 @@
 ---
 
 ## nn.Non-Linear Activations (weighted sum, nonlinearity)
-- `nn.ELU` : Applies the Exponential Linear Unit (ELU) function, element-wise.
-- `nn.Hardshrink` : Applies the Hard Shrinkage (Hardshrink) function element-wise.
-- `nn.Hardsigmoid` : Applies the Hardsigmoid function element-wise.
-- `nn.Hardtanh` : Applies the HardTanh function element-wise.
-- `nn.Hardswish` : Applies the Hardswish function, element-wise.
+- `nn.ELU` : Applies the Exponential Linear Unit (ELU) function, element-wise. *
+- `nn.Hardshrink` : Applies the Hard Shrinkage (Hardshrink) function element-wise. *
+- `nn.Hardsigmoid` : Applies the Hardsigmoid function element-wise. *
+- `nn.Hardtanh` : Applies the HardTanh function element-wise. *
+- `nn.Hardswish` : Applies the Hardswish function, element-wise. *
 - `nn.LeakyReLU` : Applies the LeakyReLU function element-wise.
 - `nn.LogSigmoid` : Applies the Logsigmoid function element-wise.
 - `nn.MultiheadAttention` : Allows the model to jointly attend to information from different representation subspaces.
@@ -43,8 +43,8 @@
 - `nn.Softplus` : Applies the Softplus function element-wise.
 - `nn.Softshrink` : Applies the soft shrinkage function element-wise.
 - `nn.Softsign` : Applies the element-wise Softsign function.
-- `nn.Tanh` : Applies the Hyperbolic Tangent (Tanh) function element-wise.
-- `nn.Tanhshrink` : Applies the element-wise Tanhshrink function.
+- `nn.Tanh` : Applies the Hyperbolic Tangent (Tanh) function element-wise. *
+- `nn.Tanhshrink` : Applies the element-wise Tanhshrink function. *
 - `nn.Threshold` : Thresholds each element of the input Tensor.
 - `nn.GLU` : Applies the gated linear unit function.
 
@@ -120,6 +120,8 @@ $$
 
 쌍곡 탄젠트 함수는 그 형태가 sigmoid와 매우 유사하지만, 최댓값 1을 가져 sigmoid보다 훨씬 넉넉한 gradient범위를 가졌다. 그러나, 여전히 곱할 수록 작아지는 특성을 벗어나지는 못했다. 다만, Bias Shift 현상은 평균이 0이기 때문에 나타나지 않는다.
 
+> 자연어 처리, 음성인식 을 위한 **recurrent neural networks에서 대부분 사용됨**
+
 ### ReLU (Rectified Linear Unit) 함수
 
 $$
@@ -194,3 +196,124 @@ $$
 [Natural Gradient를 위해 보면 좋을 글](https://rlwithme.tistory.com/5)
 
 
+## Hard Shrink function
+
+### definition
+
+$$
+HardShrink(x) = \begin{cases}
+   x &\text{if } x\gt\lambda \\
+   x &\text{if } x\lt-\lambda \\
+   0 &\text{otherwise}
+
+
+\end{cases}
+$$
+
+
+<p align="center">
+<img src="./assets/0703HardShrink.png" style="width:35%" />
+</p>
+
+## Soft Shrink function
+
+### definition
+
+$$
+SoftShrinkage(x) = \begin{cases}
+   x-\lambda &\text{if } x\gt\lambda \\
+   x+\lambda &\text{if } x\lt-\lambda \\
+   0 &\text{otherwise}
+
+
+\end{cases}
+$$
+
+<p align="center">
+<img src="./assets/0703SoftShrink.png" style="width:35%" />
+</p>
+
+
+## Tanhshrink function
+
+### definition
+
+$$
+Tanhshrink(x) = x - tanh(x)
+$$
+
+<p align="center">
+<img src="./assets/0703TanhShrink.png" style="width:35%" />
+</p>
+---
+
+> TanhShrink와 HardShrink는 잠재변수 값을 계산하기 위한 희소코딩외에는 거의 사용되지 않는다.  
+[Shrink activation function Usage](https://deeesp.github.io/deep%20learning/DL-Activation-Functions/#hardshrink---nnhardshrink)
+>> **잠재변수(Latent Variable)** : 신호를 이루는 기저 신호들, 직접 측정할 수 없어 통계적 방법론으로 추정함.
+>> **희소코딩** : 잠재변수를 알아내기 위해 알고리즘을 돌리는 것(?) 그 결과가 희소 행렬 형태로 나온다(?)  
+[희소코딩?](https://wordbe.tistory.com/134)
+>> $$x=Da \\ \text{ where } D = (d_1d_2...d_m)$$
+>> x : 영상(신호)  
+>> $D$ : 사전(dictionary) (희소행렬)  
+>> $a$ : 희소코드 (계수집합)  
+>> $d_i$ : 사전요소
+
+
+## Hard Sigmoid fuction
+
+### definition
+
+$$
+Hardsigmoid(x) = \begin{cases}
+0 &\text{if } x\leq -3,\\
+1 &\text{if } x \geq 3,\\
+x/6 + 1/2 &\text{otherwise}
+\end{cases}
+$$
+
+<p align="center">
+<img src="./assets/0703HardSigmoid.png" style="width:35%" />
+</p>
+
+[BinaryConnect Training Deep Neural Networks with binary weights during propagations](./assets/0703BinaryConnect_Training%20Deep%20Neural%20Networks%20with.pdf) 에서 처음 도입됨
+
+- binary weights(-1, 1) 만으로 빠르고 저렴하게 심층 신경망을 만들고 싶을 떄 사용하면 아주 좋다.
+- software 적으로도 그렇고, 어떤 hardware 가속기를 사용하든지 상관 없이 좋은 성능을 보였다고 한다.
+
+
+## Hard Tanh function
+
+### definition
+
+$$
+HardTanh(x) = \begin{cases}
+max\_val &\text{if } x\gt max\_val,\\
+min\_val &\text{if } x \lt min\_val,\\
+x &\text{otherwise}
+\end{cases}
+$$
+
+<p align="center">
+<img src="./assets/0703HardTanh.png" style="width:35%" />
+</p>
+
+> Tanh function의 계산적인 효율성을 고려한 버전임.   
+> 자연어 처리에서 성공적으로 적용 되었음 [출처](http://www.jmlr.org/papers/volume12/collobert11a/collobert11a.pdf)
+
+## Hard Swish(SiLU) function
+
+### definition
+
+$$
+Hardswish(x) = \begin{cases}
+0 &\text{if } x\leq -3,\\
+x &\text{if } x \geq 3,\\
+x \cdot (x+3)/6 &\text{otherwise}
+\end{cases}
+$$
+
+<p align="center">
+<img src="./assets/0703HardSwish.png" style="width:35%" />
+</p>
+
+> 신경망에서 더 깊게 진행함에 따라 nonlinearity 를 적용하는 비용은 점점 줄어든다. 해상도(픽셀수)가 다음 층으로 넘어갈 떄마다 대부분 절반으로 떨어지기 떄문이다. `swish` 모델 역시 망의 깊은 부분에서 효과적이라는 것을 알고 있기 때문에, 우리 모델에서 `hard-swish` 도 모델의 후반부에서만 사용했다. [출처](0703SearchingforMobileNetV3)
