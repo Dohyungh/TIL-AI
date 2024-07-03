@@ -205,8 +205,6 @@ HardShrink(x) = \begin{cases}
    x &\text{if } x\gt\lambda \\
    x &\text{if } x\lt-\lambda \\
    0 &\text{otherwise}
-
-
 \end{cases}
 $$
 
@@ -224,8 +222,6 @@ SoftShrinkage(x) = \begin{cases}
    x-\lambda &\text{if } x\gt\lambda \\
    x+\lambda &\text{if } x\lt-\lambda \\
    0 &\text{otherwise}
-
-
 \end{cases}
 $$
 
