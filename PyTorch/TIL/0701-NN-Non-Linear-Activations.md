@@ -27,11 +27,11 @@
 - `nn.Hardsigmoid` : Applies the Hardsigmoid function element-wise. *
 - `nn.Hardtanh` : Applies the HardTanh function element-wise. *
 - `nn.Hardswish` : Applies the Hardswish function, element-wise. *
-- `nn.LeakyReLU` : Applies the LeakyReLU function element-wise.
+- `nn.LeakyReLU` : Applies the LeakyReLU function element-wise. *
 - `nn.LogSigmoid` : Applies the Logsigmoid function element-wise.
 - `nn.MultiheadAttention` : Allows the model to jointly attend to information from different representation subspaces.
 - `nn.PReLU` : Applies the element-wise PReLU function.
-- `nn.ReLU` : Applies the rectified linear unit function element-wise.
+- `nn.ReLU` : Applies the rectified linear unit function element-wise. *
 - `nn.ReLU6` : Applies the ReLU6 function element-wise.
 - `nn.RReLU` : Applies the randomized leaky rectified linear unit function, element-wise.
 - `nn.SELU` : Applies the SELU function element-wise.
@@ -313,3 +313,67 @@ $$
 </p>
 
 > 신경망에서 더 깊게 진행함에 따라 nonlinearity 를 적용하는 비용은 점점 줄어든다. 해상도(픽셀수)가 다음 층으로 넘어갈 떄마다 대부분 절반으로 떨어지기 떄문이다. `swish` 모델 역시 망의 깊은 부분에서 효과적이라는 것을 알고 있기 때문에, 우리 모델에서 `hard-swish` 도 모델의 후반부에서만 사용했다. [출처](0703SearchingforMobileNetV3)
+
+## Rectified Linear Unit(ReLU) Function
+
+### definition
+
+$$
+f(x) = max(0, x)
+$$
+<p align="center">
+<img src="./assets/0702ReLU.png" style="width:35%" />
+</p>
+
+0보다 큰 범위에서 기울기 1, 작은 범위에서 0의 기울기를 가진다. 
+
+### 장점
+- 빠른 학습
+- Sigmoid, Tanh actiation function에 비해서 보다 우수한 성능 및 일반화
+- linear model 의 장점인 gradient-descent 를 최적화에 적극적으로 사용할 수 있다는 장점을 계승함
+- 빠른 계산 (지수, 나눗셈 없음)
+> 0에서 최대 사이의 범위를 가지는 값들을 뭉개버림(squishes)으로써 hidden units에 희소성(sparcity)을 도입할 수 있음 (?)
+
+### 단점
+- Sigmoid 에 비해 쉽게 Overfitting되는 경향이 있고, 이를 줄이기 위해 dropout 기법이 적용됨.
+- dead neuron이 학습에 방해를 야기함
+
+## Leaky ReLu (LReLU)
+
+### definition
+
+$$
+LeakyReLU(x) = max(0,x) + negative\_slope * min(0,x)
+$$
+
+<p align="center">
+<img src="./assets/0702LeakyReLu.png" style="width:35%" />
+</p>
+
+- 죽은 뉴런이 안 생긴다는 점을 제외하고는 ReLU와 동일함
+- 희소성과 분산을 가진다는 점을 빼면 상당한 개선은 없음
+
+## LogSigmoid
+
+### definition
+
+$$
+LogSigmoid(x) = log(\frac{1}{1+exp(-x)})
+$$
+
+<p align="center">
+<img src="./assets/0704LogSigmoid.png" style="width:35%" />
+</p>
+
+[log sigmoid 근사](https://bab2min.tistory.com/626)
+
+위 링크에서는,
+- word2vec을 확장한 모형에서 LogSigmoid를 사용한 코드를 구현했는데
+- 그 계산 비용에 지수와 로그가 포함되어 전체적인 성능향상이 필요했다.
+- 근사를 계산하는 방식으로 성능을 개선했는데, 구체적인 방법은 이렇다.
+- x<0 에서
+   1. S(x) = logsigmoid(x)
+   2. S(x) ~ $-log(e^(-x))$ = x
+   3. S(x) - x = 오차 = $log(1+e^x)$ = S(-x)
+- 인데 x>0 에서 함수는 0에 매우 빨리 근접하므로, 0에 아직 충분히 가깝지 않은 부분까지만(대략 x=32) 테이블로 구해놓고, 그 이상은 0으로 퉁치는 방법을 썼다.
+> 손실함수로 더 많이 쓰인다는 것을 제외하고는 나오는 게 별로 없다.
