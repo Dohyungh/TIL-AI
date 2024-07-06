@@ -387,9 +387,9 @@ Transformer 문서에 별도 작성
 ### definition
 
 $$
-PReLU(x) = max(0,x) + a*min(0,x)\\
-or \\
-\\
+PReLU(x) = max(0,x) + a*min(0,x)\\  
+or \\  
+\\  
 PReLU(x) = \begin{cases}
 x &\text{if } x\geq0\\
 ax &\text{otherwise}
