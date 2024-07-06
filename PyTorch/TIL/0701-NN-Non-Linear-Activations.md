@@ -28,7 +28,7 @@
 - `nn.Hardtanh` : Applies the HardTanh function element-wise. *
 - `nn.Hardswish` : Applies the Hardswish function, element-wise. *
 - `nn.LeakyReLU` : Applies the LeakyReLU function element-wise. *
-- `nn.LogSigmoid` : Applies the Logsigmoid function element-wise.
+- `nn.LogSigmoid` : Applies the Logsigmoid function element-wise. *
 - `nn.MultiheadAttention` : Allows the model to jointly attend to information from different representation subspaces.
 - `nn.PReLU` : Applies the element-wise PReLU function.
 - `nn.ReLU` : Applies the rectified linear unit function element-wise. *
@@ -377,3 +377,45 @@ $$
    3. S(x) - x = 오차 = $log(1+e^x)$ = S(-x)
 - 인데 x>0 에서 함수는 0에 매우 빨리 근접하므로, 0에 아직 충분히 가깝지 않은 부분까지만(대략 x=32) 테이블로 구해놓고, 그 이상은 0으로 퉁치는 방법을 썼다.
 > 손실함수로 더 많이 쓰인다는 것을 제외하고는 나오는 게 별로 없다.
+
+## Multi-Head Attention
+
+Transformer 문서에 별도 작성
+
+## PReLU
+
+### definition
+
+$$
+PReLU(x) = max(0,x) + a*min(0,x)\\
+or \\
+\\
+PReLU(x) = \begin{cases}
+x &\text{if } x\geq0\\
+ax &\text{otherwise}
+\end{cases}
+$$
+
+$a$는 학습 파라미터로, `num_parameters=1`에 아무것도 넘겨 주지 않을 경우 (즉, default 인 1의 값을 줄 경우) a는 단일 파라미터로, 모든 input channel들에 동일하게 적용된다.
+만약 `nn.PReLU(nChannels)`와 같은 형식으로 정해준다면, 각 input channel마다 다른 $a$가 적용된다.
+(nChannels는 input의 2nd 차원을 가리키는데, input의 차원이 2 미만이라면, 1로 간주한다.)
+
+`init=0.25`에 $a$의 초기값을 적용해 줄 수 있다.
+
+> weight decay는 성능을 위해서는 사용되지 않아야 한다.
+
+### 특징
+$a$는 음수 부분의 기울기를 결정하는 변수인데, back-prop 과정에서 학습이 가능하다. $a=0$인 경우 PReLU는 ReLU와 같아진다.
+
+> Large scale Image Recognition에서 ReLU보다 성능이 우수하다. Visual Recognition Challenge에서 사람 수준의 성능을 처음으로 넘었다고 한다. [출처](https://neverabandon.tistory.com/8)
+
+### Optimization
+
+<p align="center">
+<img src="./assets/0706PReLUOptimization.png" style="width:60%" />
+</p>
+
+출처:
+[Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification](https://arxiv.org/abs/1502.01852)
+
+최적화 과정이 궁금해 찾아보았다. 실제로는 momentum(4번 식에서 $\mu$)을 적용하며, 수식은 위에 써져 있는 것과 같다. 그 과정에서 weight decay (= l2 정규화) 를 사용하게 되면 $a$의 절댓값이 계속해서 줄어들면서 0이 되어 ReLU와 같아지기 때문에, 사용하지 않았다고 한다. 정규화 없이도 최댓값이 1을 넘지 않았고, 활성함수가 단조 증가하지 않도록 $a$의 범위를 제한하지도 않았다고 한다. 목적함수에 대한 $a$의 gradient를 계산할 때 layer의 모든 채널에 대해 더해주어야 하는데, 이 정도의 시간복잡도는 forward, backprop 모두에서 무시가능한 수준이라고 한다.
