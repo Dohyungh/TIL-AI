@@ -30,9 +30,9 @@
 - `nn.LeakyReLU` : Applies the LeakyReLU function element-wise. *
 - `nn.LogSigmoid` : Applies the Logsigmoid function element-wise. *
 - `nn.MultiheadAttention` : Allows the model to jointly attend to information from different representation subspaces.
-- `nn.PReLU` : Applies the element-wise PReLU function.
+- `nn.PReLU` : Applies the element-wise PReLU function. *
 - `nn.ReLU` : Applies the rectified linear unit function element-wise. *
-- `nn.ReLU6` : Applies the ReLU6 function element-wise.
+- `nn.ReLU6` : Applies the ReLU6 function element-wise. *
 - `nn.RReLU` : Applies the randomized leaky rectified linear unit function, element-wise.
 - `nn.SELU` : Applies the SELU function element-wise.
 - `nn.CELU` : Applies the CELU function element-wise.
@@ -41,7 +41,7 @@
 - `nn.SiLU` : Applies the Sigmoid Linear Unit (SiLU) function, element-wise.
 - `nn.Mish` : Applies the Mish function, element-wise.
 - `nn.Softplus` : Applies the Softplus function element-wise.
-- `nn.Softshrink` : Applies the soft shrinkage function element-wise.
+- `nn.Softshrink` : Applies the soft shrinkage function element-wise. *
 - `nn.Softsign` : Applies the element-wise Softsign function.
 - `nn.Tanh` : Applies the Hyperbolic Tangent (Tanh) function element-wise. *
 - `nn.Tanhshrink` : Applies the element-wise Tanhshrink function. *
@@ -472,3 +472,25 @@ Alex Krizhevsky의 모델의 filter들은 weights 는 공유하지만, bias는 �
 
 > CNN 을 확률 분포 적인 측면으로 바라보는 것이라 굉장히 낯설고 모르는 개념이 많이 나오는데, (mean-field $y$,, energy,, sparse feature) 좀 더 공부해 봐야 겠다. Alex Krizhevsky가 자기 모델의 원류로서 참고한 논문은 [ReLU improve Restricted Boltzmann Machines](https://www.cs.toronto.edu/~fritz/absps/reluICML.pdf)이다.
 
+
+## RReLU (randomized leaky ReLU)
+
+### definition
+
+$$
+RReLU(x) = \begin{cases}
+x &\text{if } x\geq 0 \\
+ax &\text{otherwise}
+\end{cases}
+$$
+
+
+<p align="center">
+<img src="./assets/0708RReLU.png" style="width:35%" />
+</p>
+
+training 중에는 $a$는 uniform 분포 $\mu(lower,upper)$에서 랜덤 샘플링 된 값이다. 반면 evaluation/test 과정에서 $a$는 중간값($\frac{lower+upper}{2}$)으로 고정된다.
+
+Kaggle NDSB 대회에서 처음 사용되었으며, 해당 대회 우승자는 $\mu(3,8)$ 을 사용했다.
+
+[Empirical Evaluation of Rectified Activations in Convolution Network](https://arxiv.org/pdf/1505.00853) 에 따르면, ReLU 보다 Leaky ReLU, PReLU(Parametric ReLU), RReLU가 더 성능이 좋았으나, 그 이유에 대해서는 아직 논의가 더 필요하다고 밝혔다. 특히 데이터셋의 크기에 따라(그중에서도, 더 거대한 데이터셋 에서.) 활성함수들이 어떻게 작용하는지에 대해 더 연구가 필요하다고 결론지었다.
