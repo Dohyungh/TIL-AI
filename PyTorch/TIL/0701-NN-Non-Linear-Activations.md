@@ -418,3 +418,52 @@ $a$는 음수 부분의 기울기를 결정하는 변수인데, back-prop 과정
 [Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification](https://arxiv.org/abs/1502.01852)
 
 최적화 과정이 궁금해 찾아보았다. 실제로는 momentum(4번 식에서 $\mu$)을 적용하며, 수식은 위에 써져 있는 것과 같다. 그 과정에서 weight decay (= l2 정규화) 를 사용하게 되면 $a$의 절댓값이 계속해서 줄어들면서 0이 되어 ReLU와 같아지기 때문에, 사용하지 않았다고 한다. 정규화 없이도 최댓값이 1을 넘지 않았고, 활성함수가 단조 증가하지 않도록 $a$의 범위를 제한하지도 않았다고 한다. 목적함수에 대한 $a$의 gradient를 계산할 때 layer의 모든 채널에 대해 더해주어야 하는데, 이 정도의 시간복잡도는 forward, backprop 모두에서 무시가능한 수준이라고 한다.
+
+
+## ReLU6
+
+[AlexNet - Alex Krizhevsky](http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf)
+
+[Jinsol Kim's Blog](https://gaussian37.github.io/dl-concept-relu6/)
+
+### definition
+
+$$
+ReLU6(x) = min(max(0,x), 6)
+$$
+
+**상한선을 6으로 둔 ReLU** 함수라고 생각하면 된다. 여기서 
+
+**상한선을 두는 이유**는
+
+- (embedded 영역에서 특히) 표현하는데 필요한 bit를 절약하기 위해서,
+- sparse한 feature를 더 일찍 학습할 수 있게 되기 때문에, 이며
+
+**그 숫자가 6인 이유**는  
+
+- 단순히 성능이 좋았기 때문이라고 한다.
+
+### 분포 측면
+bias만큼 평행이동한 6개의 베르누이 분포로 구성된 ReLU 유닛
+
+ vs 무한개의 베르누이 분포 로 일반적인 ReLU와의 차이를 설명했다.
+
+이에 따라 Noise Model 의 표준편차도 변형된 것을 사용했는데,
+원래는 $\frac{1}{1+e^{-x}}$ 의 표준편차를 지닌 정규분포를 사용하지만 Alex Krizhevsky는
+$$
+\begin{cases}
+0 &\text{if } y= 0 \text{ or } y=6 \\
+1 &\text{if } 0 \lt y \lt 6
+\end{cases}
+$$
+
+를 사용했다.
+
+이를 요약하면, $y$ 가 6에 근접했을 때는 두 모델이 거의 같아지지만, 0부근에서는 0을 조금이라도 초과하면 갑자기 매우 큰 편차의 noise 페널티를 주는 것이다. 
+
+이는 자연이미지를 대상으로 하는 비지도 학습이 널리 채용하는 sparseness-inducing tricks에 기인한 것이다.
+
+Alex Krizhevsky의 모델의 filter들은 weights 는 공유하지만, bias는 공유하지 않는데, 이는 또한 "이미지의 굳이 모든 부분에서 좋은 성능을 발휘하지 않아도 되는" 필터를 학습할 수 있게 하는 효과가 있다.(~~직역하니 어려운데, 그냥 중요한 부분에 집중해 학습한다는 뜻인 것 같다.~~)
+
+> CNN 을 확률 분포 적인 측면으로 바라보는 것이라 굉장히 낯설고 모르는 개념이 많이 나오는데, (mean-field $y$,, energy,, sparse feature) 좀 더 공부해 봐야 겠다. Alex Krizhevsky가 자기 모델의 원류로서 참고한 논문은 [ReLU improve Restricted Boltzmann Machines](https://www.cs.toronto.edu/~fritz/absps/reluICML.pdf)이다.
+
