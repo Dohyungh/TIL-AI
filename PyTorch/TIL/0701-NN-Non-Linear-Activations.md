@@ -450,6 +450,7 @@ bias만큼 평행이동한 6개의 베르누이 분포로 구성된 ReLU 유닛
 
 이에 따라 Noise Model 의 표준편차도 변형된 것을 사용했는데,
 원래는 $\frac{1}{1+e^{-x}}$ 의 표준편차를 지닌 정규분포를 사용하지만 Alex Krizhevsky는
+
 $$
 \begin{cases}
 0 &\text{if } y= 0 \text{ or } y=6 \\
