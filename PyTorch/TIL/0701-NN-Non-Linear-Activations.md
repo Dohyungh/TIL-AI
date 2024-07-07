@@ -432,6 +432,10 @@ $$
 ReLU6(x) = min(max(0,x), 6)
 $$
 
+<p align="center">
+<img src="./assets/0707ReLU6.png" style="width:35%" />
+</p>
+
 **상한선을 6으로 둔 ReLU** 함수라고 생각하면 된다. 여기서 
 
 **상한선을 두는 이유**는
