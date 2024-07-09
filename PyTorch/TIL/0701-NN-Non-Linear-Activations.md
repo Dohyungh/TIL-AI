@@ -304,7 +304,7 @@ $$
 
 > 이런 점이, CELU로 하여금 ReLU와 선형함수가 서로 간섭한 활성함수로 이해되게끔 한다.
 
-[Continuously Differentiable Exponential Linear Units](https://arxiv.org/pdf/1704.07483)에서는 ELU의 좋은 특징인 vanishing gradient 문제가 없고, 평균값이 0에 근접하는 점에 더해
+[Continuously Differentiable Exponential Linear Units](https://arxiv.org/pdf/1704.07483)에서는 ELU의 좋은 특징인 vanishing gradient 문제가 없고, 평균값이 0에 근접하는 점에 더해 다음과 같은 장점이 있다고 밝혔다.
 
 1. 그 미분이 x에 대해 닫혀있고(bounded)
 2. 단순한 선형함수와 ReLU가 특별한 케이스로 포함가능하며
