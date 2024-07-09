@@ -250,7 +250,71 @@ Self-Normalizing NN 을 만들기 위해 고안된 활성함수로, 각각의 �
 > 3. 네트워크는 일렬로 쌓여야 함. RNN 같이 순차적이지 않으면 self-normalized 보장이 안됨  
 > [출처](https://hwk0702.github.io/ml/dl/deep%20learning/2020/07/09/activation_function/)
 
+## CELU (Continuously Differentiable ELU)
 
+### definition
+$$
+CELU(x) = max(0,x) + min(0,\alpha * (exp(x/\alpha)-1))
+$$
+
+$$
+CELU(x,\alpha) = \begin{cases}
+x &\text{if }x\geq 0 \\
+\alpha(exp(\frac{x}{\alpha}-1)) &\text{otherwise}
+\end{cases}
+$$
+
+<p align="center">
+<img src="./assets/0710CELU.png" style="width:35%" />
+</p>
+
+$\alpha$ 의 기본값은 1이고, 이때 ELU 와 CELU는 같다.
+
+$$
+\forall_x ELU(x,1) = CELU(x,1)
+$$
+
+미분을 해보자
+
+$$
+\frac{d}{dx}CELU(x,\alpha) = \begin{cases}
+1 &\text{if } x\geq0\\
+exp(\frac{x}{\alpha}) &\text{otherwise}
+\end{cases}
+$$
+
+$$
+\frac{d}{d\alpha}CELU(x,\alpha) = \begin{cases}
+0 &\text{if } x\geq0\\
+exp(\frac{x}{\alpha})(1-\frac{x}{\alpha})-1 &\text{otherwise}
+\end{cases}
+$$
+
+$exp(\frac{x}{\alpha})$ 를 미리 계산해 놓은 다음에 forward와 backward에서 모두 사용할 수 있음을 알 수 있다.
+
+ELU와 다르게, CELU는 scale-similar하다. 이는 곧,
+
+$$
+CELU(x,\alpha) = \frac{1}{c}CELU(cx,c\alpha)
+$$
+
+를 의미한다.V
+
+또한, $\alpha$ 가 0에서 우극한을 취할 떄 CELU는 ReLU로 수렴하고, $\alpha$ 가 $\infty$ 로 발산할 떄는 아무 작업도 하지 않는 기울기 1인 선형함수가 된다.
+
+> 이런 점이, CELU로 하여금 ReLU와 선형함수가 서로 간섭한 활성함수로 이해되게끔 한다.
+
+[Continuously Differentiable Exponential Linear Units](https://arxiv.org/pdf/1704.07483)에서는 ELU의 좋은 특징인 vanishing gradient 문제가 없고, 평균값이 0에 근접하는 점에 더해
+
+1. 그 미분이 x에 대해 닫혀있고(bounded)
+2. 단순한 선형함수와 ReLU가 특별한 케이스로 포함가능하며
+3. $\alpha$에 대해 scale-similar 하다.
+
+<p align="center">
+<img src="./assets/0710CELUGraph.png" style="width:70%" />
+</p>
+
+> 위 그래프에서 함수의 연속성, 미분의 닫힌계, ReLU와 선형함수의 간섭을 중점적으로 살펴보자.
 
 ## Hard Shrink function
 
