@@ -34,12 +34,13 @@
 - `nn.ReLU` : Applies the rectified linear unit function element-wise. *
 - `nn.ReLU6` : Applies the ReLU6 function element-wise. *
 - `nn.RReLU` : Applies the randomized leaky rectified linear unit function, element-wise. *
-- `nn.SELU` : Applies the SELU function element-wise.
-- `nn.CELU` : Applies the CELU function element-wise.
+- `nn.SELU` : Applies the SELU function element-wise.*
+- `nn.CELU` : Applies the CELU function element-wise.*
 - `nn.GELU` : Applies the Gaussian Error Linear Units function.
-- `nn.Sigmoid` : Applies the Sigmoid function element-wise.
+- `nn.Sigmoid` : Applies the Sigmoid function element-wise.*
 - `nn.SiLU` : Applies the Sigmoid Linear Unit (SiLU) function, element-wise.
 - `nn.Mish` : Applies the Mish function, element-wise.
+   - https://hongl.tistory.com/213 참고할 것
 - `nn.Softplus` : Applies the Softplus function element-wise.
 - `nn.Softshrink` : Applies the soft shrinkage function element-wise. *
 - `nn.Softsign` : Applies the element-wise Softsign function.
@@ -74,7 +75,7 @@ Linear Activation의 경우 단순한 행렬 곱인데, 이는 단순히 괄호�
 
 > 다만, 선형 활성함수를 사용한 층을 '은닉층'(비선형 활성함수를 사용하는) 과 구별해 '선형층'이라는 별개의 이름으로 부르기도 할 정도로 그 자체로 학습할 수 있는 weight이 생겨난다는 측면에서 의미가 아주 없지는 않다. [wikidocs.net](https://wikidocs.net/60683)
 
-## 활성화 함수의 선택
+## 활성화 함수의 선택 tip (~~맹신금지~~)
 [출처](https://hwk0702.github.io/ml/dl/deep%20learning/2020/07/09/activation_function/)
 - 일반적으로 SELU > ELU > LeakyReLU(그리고 변종들) > ReLU > tanh > sigmoid 순
 - 네트워크가 자기 정규화되지 못하는 구조라면 SELU 보단 ELU
@@ -205,6 +206,13 @@ $$
 
 [Natural Gradient를 위해 보면 좋을 글](https://rlwithme.tistory.com/5)
 
+
+> ++ GELU를 공부하다가 위의 말이 좀 이해가 가기 시작해서 추가로 적음 (0711)  
+
+> ReLU의 dying neuron 현상을 해결하기 위해서 Leaky ReLU 같은 것이 고안되었는데, 그 음수의 기울기는 모든 범위에서 일정하고, 한계가 없다. 이는 뉴런을 **죽이지는** 않지만, 결국 큰 음수값으로 귀결돼어 최종 출력층에서는 뉴런이 활성화 되지 않게 해서 학습에 악영향을 미칠 수 있다.  
+> 따라서, negative regime (음수 영역) 에서 그 미분과 값 자체에 나름의 제한을 주었으면 좋겠다는 생각을 하게 됨. 이에 ELU, GELU 등이 탄생한게 아닌가 생각해본다.
+
+
 ## SELU (Scaled ELU)
 
 ### definition
@@ -298,7 +306,7 @@ $$
 CELU(x,\alpha) = \frac{1}{c}CELU(cx,c\alpha)
 $$
 
-를 의미한다.V
+를 의미한다.
 
 또한, $\alpha$ 가 0에서 우극한을 취할 떄 CELU는 ReLU로 수렴하고, $\alpha$ 가 $\infty$ 로 발산할 떄는 아무 작업도 하지 않는 기울기 1인 선형함수가 된다.
 
@@ -315,6 +323,72 @@ $$
 </p>
 
 > 위 그래프에서 함수의 연속성, 미분의 닫힌계, ReLU와 선형함수의 간섭을 중점적으로 살펴보자.
+
+## GELU (Gaussian Error Linear Units function)
+
+[GELU](./assets/0711GaussianErrorLinearUnits(GELUs).pdf) 논문 그리 길지도 않고 매우 읽어볼만 하다.
+
+[위 논문을 정리한 블로그](https://hongl.tistory.com/236)
+
+### definition
+
+$$
+GELU(x) = x *\Phi(x)
+$$
+
+$\Phi(x)$ 는 Cumulative Function for Gaussian Distribution.
+
+`arg` 로 `approximate='none'`을 지정할 수 있는데, 이를 만약 `'tanh'`로 지정하면, Gelu는 다음과 같이 근사된다. (그러나, 근사하지 않고 원본 함수를 쓰는 것이 충분히 빨라서 쓰일 일이 별로 없다.)
+
+$$
+GELU(x) = 0.5 * x * (1+Tanh(\sqrt{2/\pi}*(x+0.044715*x^3)))
+$$
+
+[A Simple Approximation to the Area Under Standard Normal Curve](./assets/0711ASimpleApproximationtotheAreaUnderStandard.pdf)에서 나온 아래 식을 썼다.
+
+
+<p align="center">
+<img src="./assets/0711GeluApproximation.png" style="width:50%" />
+</p>
+
+혹은
+
+$$
+x\sigma(1.702x)
+$$
+
+로 근사할 수도 있다.
+
+마지막 근사는 sigmoid 함수를 사용하기 때문에 SiLU함수라고도 부른다.
+
+<p align="center">
+<img src="./assets/0711GeluComparison.png" style="width:35%" />
+</p>
+
+Computer Vision, NLP, Speech Recognition 에서 최고 성능을 내는 모델들에(SOTA) 사용되고 있다.
+
+dropout, zoneout 및 ReLU의 속성을 결합한 함수를 만들자는 생각에서 고안되었다.
+
+핵심 아이디어는 다음의 두가지이다.
+- Deterministic이 아닌(ReLU) 확률적으로(=dropout) 0 / 1 masking을 곱해주자
+- 단, 확률을 결정하는 것은 x의 부호가 아닌(ReLU) 값이 었으면 한다.
+
+결과적으로는 x 에 $m \sim Bernoulli(\Phi(x))$ 를 곱해준다.
+이때, $\Phi(x)$ 를 쓰는 이유는, [배치 정규화](https://velog.io/@js03210/Deep-Learning-Batch-Normalization-%EB%B0%B0%EC%B9%98-%EC%A0%95%EA%B7%9C%ED%99%94) 과정에서 x 가 일반적으로 정규분포 양상을 띄기 때문이다. 결국, x가 작을 수록 dropout 될 확률이 증가한다.
+
+ReLU 가 단순히 부호에 의해 masking 하는 것에 비해, GELU는 다른 input에 대해 해당 input이 얼마나 크냐에 따라 masking 한다.
+
+### 특징
+- bounded below
+- non-monotonic
+- unbounded above
+- smooth
+
+특징을 모두 갖는 함수가 GELU이다..
+$\mu = 0$ 이고, $\sigma \rightarrow 0$ 이면 GELU는 ReLU가 되기 떄문에, ReLU의 Smooth 버전이라 볼 수 있고,
+재밌는 건 GELU 에서 $\Phi$ 를 $Cauchy(0,1)$ 로 정의하면 ELU가 나온다고 한다.
+
+
 
 ## Hard Shrink function
 
@@ -416,7 +490,7 @@ $$
 > Tanh function의 계산적인 효율성을 고려한 버전임.   
 > 자연어 처리에서 성공적으로 적용 되었음 [출처](http://www.jmlr.org/papers/volume12/collobert11a/collobert11a.pdf)
 
-## Hard Swish(SiLU) function
+## Hard Swish function
 
 ### definition
 
