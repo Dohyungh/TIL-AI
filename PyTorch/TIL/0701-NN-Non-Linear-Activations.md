@@ -342,7 +342,7 @@ $\Phi(x)$ 는 Cumulative Function for Gaussian Distribution.
 
 
 $$
-GELU(x) = 0.5 * x * (1+Tanh(\sqrt{\frac{2}{\pi}}*(x+0.044715*{x^3})))
+GELU(x) = 0.5 * x * (1+Tanh(\sqrt{\frac{2}{\pi}})) * (x+0.044715 * {x^3})
 $$
 
 
