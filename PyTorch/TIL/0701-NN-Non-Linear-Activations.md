@@ -341,7 +341,7 @@ $\Phi(x)$ 는 Cumulative Function for Gaussian Distribution.
 `arg` 로 `approximate='none'`을 지정할 수 있는데, 이를 만약 `'tanh'`로 지정하면, Gelu는 다음과 같이 근사된다. (그러나, 근사하지 않고 원본 함수를 쓰는 것이 충분히 빨라서 쓰일 일이 별로 없다.)
 
 $$
-GELU(x) = 0.5 * x * (1+Tanh(\sqrt{2 / \pi}*(x+0.044715*x^3)))
+GELU(x) = 0.5 * x * (1+Tanh(\sqrt{\frac{2}{\pi}}*(x+0.044715*x^3)))
 $$
 
 [A Simple Approximation to the Area Under Standard Normal Curve](./assets/0711ASimpleApproximationtotheAreaUnderStandard.pdf)에서 나온 아래 식을 썼다.
