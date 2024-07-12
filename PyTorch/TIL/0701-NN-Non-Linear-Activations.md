@@ -398,6 +398,7 @@ $\mu = 0$ 이고, $\sigma \rightarrow 0$ 이면 GELU는 ReLU가 되기 떄문에
 $$
 silu(x) = x*\sigma(x)
 $$
+
 $\sigma(x)$ 는 logistic sigmoid 이다.
 
 최초에 GELU 에서 기원했다. 그 이후에 다음의 두 논문에서 실험을 거치며 그 존재가 드러났다.
@@ -412,6 +413,7 @@ $\sigma(x)$ 는 logistic sigmoid 이다.
 ReLU 처럼, unbounded-above, bounded-below 이다. 그러나 ReLU와 다르게 smooth하며, non-monotonic 하다. 이 비단조증가 특성이 특히 다른 활성함수들과 다른 점을 만든다.
 
 미분은 다음과 같다.
+
 $$
 f'(x) = f(x) + \sigma(x)(1-f(x))
 $$
@@ -430,7 +432,11 @@ saturation을 피할 수 있기에 Unboundedness는 바람직하다. gradient가
 
 ### non-monotonicity
 비단조증가라는 점은 결과적으로, 작은 음의 input에 대해서도 음의 output들을 만들어낸다는 특징을 만든다.
-이런 특징은 표현력(expressivity)와 gradient flow를 개선시키는데, 대부분의 Preactivations 들이 해당 범위에서 시작한다는 점에서 더 중요하다.
+이런 특징은 표현력(expressivity)와 gradient flow를 개선시키는데, 대부분의 Preactivations 들이 해당 범위에서 시작한다는 점에서 더 중요하다. 다음의 히스토그램으 보면, 대부분 0보다 약간 작은 값에 많이 떨어져 있는 것을 볼 수 있다.
+
+<p align="center">
+<img src="./assets/0712SiLUPreactivations.png" style="width:60%" />
+</p>
 
 ### Smoothness 
 
