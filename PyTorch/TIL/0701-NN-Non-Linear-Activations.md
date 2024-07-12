@@ -36,9 +36,9 @@
 - `nn.RReLU` : Applies the randomized leaky rectified linear unit function, element-wise. *
 - `nn.SELU` : Applies the SELU function element-wise.*
 - `nn.CELU` : Applies the CELU function element-wise.*
-- `nn.GELU` : Applies the Gaussian Error Linear Units function.
+- `nn.GELU` : Applies the Gaussian Error Linear Units function. *
 - `nn.Sigmoid` : Applies the Sigmoid function element-wise.*
-- `nn.SiLU` : Applies the Sigmoid Linear Unit (SiLU) function, element-wise.
+- `nn.SiLU` : Applies the Sigmoid Linear Unit (SiLU) function, element-wise.*
 - `nn.Mish` : Applies the Mish function, element-wise.
    - https://hongl.tistory.com/213 참고할 것
 - `nn.Softplus` : Applies the Softplus function element-wise.
@@ -389,6 +389,58 @@ ReLU 가 단순히 부호에 의해 masking 하는 것에 비해, GELU는 다른
 특징을 모두 갖는 함수가 GELU이다..
 $\mu = 0$ 이고, $\sigma \rightarrow 0$ 이면 GELU는 ReLU가 되기 떄문에, ReLU의 Smooth 버전이라 볼 수 있고,
 재밌는 건 GELU 에서 $\Phi$ 를 $Cauchy(0,1)$ 로 정의하면 ELU가 나온다고 한다.
+
+## SiLU (Sigmoid Linear Unit)
+
+### definition
+#### **swish function**이라고도 부른다.
+
+$$
+silu(x) = x*\sigma(x)
+$$
+$\sigma(x)$ 는 logistic sigmoid 이다.
+
+최초에 GELU 에서 기원했다. 그 이후에 다음의 두 논문에서 실험을 거치며 그 존재가 드러났다.
+
+
+[Sigmoid-Weighted Linear Units for Neural Network Function Approximation in Reinforcement Learning](https://arxiv.org/pdf/1702.03118)
+
+[SWISH: A SELF-GATED ACTIVATION FUNCTION](https://arxiv.org/pdf/1710.05941v1)에서 Swish의 특징과 그 특징으로 야기되는 장점들을 정리했다.
+
+### 특징
+
+ReLU 처럼, unbounded-above, bounded-below 이다. 그러나 ReLU와 다르게 smooth하며, non-monotonic 하다. 이 비단조증가 특성이 특히 다른 활성함수들과 다른 점을 만든다.
+
+미분은 다음과 같다.
+$$
+f'(x) = f(x) + \sigma(x)(1-f(x))
+$$
+
+<p align="center">
+<img src="./assets/0712SiLUDerivatives.png" style="width:35%" />
+</p>
+
+input이 1.25보다 작으면 derivative는 1보다 작은 절댓값을 갖는다. Swish 함수의 성공적인 도입은 곧 ReLU의 gradient 보존 특성 (양수 범위에서 항상 기울기 1)이 더 이상 현대 딥러닝 구조에서는 특별한 이점이 아니라는 것을 뜻한다고 밝혔다.
+
+### boundedness
+
+saturation을 피할 수 있기에 Unboundedness는 바람직하다. gradient가 0에 가까워질 수록 학습이 느리기 때문이다. *sigmoid*나 *tanh*의 경우 위와 아래에서 모두 bounded 되어 있기 때문에 (멀리멀리 점프하기 힘들어서) 초기화가 중요해진다. 양수 영역에서 unbounded 된 것은 이 saturation을 피할 수 있다는 점에서 바람직하다.
+
+반면에, 음수 영역에서는 bounded 되는 것이 바람직한데, 강력한 normalization 효과가 있기 때문이다. 덕분에 큰 음수 input은 잘 "잊혀진"다.
+
+### non-monotonicity
+비단조증가라는 점은 결과적으로, 작은 음의 input에 대해서도 음의 output들을 만들어낸다는 특징을 만든다.
+이런 특징은 표현력(expressivity)와 gradient flow를 개선시키는데, 대부분의 Preactivations 들이 해당 범위에서 시작한다는 점에서 더 중요하다.
+
+### Smoothness 
+
+<p align="center">
+<img src="./assets/0712SiLUAdvantages.png" style="width:60%" />
+</p>
+
+smoothness 또한 위의 그림과 같이 output landscape을 부드럽게 만들어준다는 점에서 (ReLU의 경우 별모양으로 날카로운 경계가 만들어진다.) 이점을 준다.
+
+output이 부드러워진다는 것은 곧 loss landscape 또한 매끄러워짐을 의미하고, 이는 곧 초기화와 learning rate에 강건한 모델을 만들 수 있게 해줌을 뜻한다.
 
 
 
