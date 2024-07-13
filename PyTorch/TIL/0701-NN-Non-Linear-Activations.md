@@ -486,7 +486,8 @@ $\Delta(x)$ 가 gradient를 완만하게 만들어 주는 것을 실험적으로
 
 어쨌거나, 강력한 regularization 효과와 함께 gradient를 완만하게 만들어 최적화가 쉽게 해주는 것이 Swish를 능가할 수 있었던 이유라고 저자는 판단했다.
 
-#### 중요하니까 복습할 겸 한 번 더 적자.
+### 특징
+거의 Swish와 동일하다.
 
 #### 작은 음수 보존
 Dying ReLU 예방, 표현력과 정보 흐름에 좋은 영향을 줌.
@@ -505,6 +506,18 @@ Swish도 꽤나 울퉁불퉁/뾰족뾰족한 loss를 보이는데 말이다. 위
 <p align="center">
 <img src="./assets/0713MishLossLandscape.png" style="width:60%" />
 </p>
+
+> local min이 눈에 띄게 줄어든 점은 분명 좋은 점이지만, 최적화의 **속도** 면에서는 Swish가 더 빠르지 않을까 싶다.   
+> 다른 얘기지만 computing 면에서 Mish가 Swish보다 느리다는 포스팅도 있었다.  
+> 어찌보면 더 완만한 landscape을 만든다는건 반대로 분명히 구분해내야할 contour에서는 더 안 좋은 성능을 보이지 않을까 하는 개인적인 생각이 든다.  
+
+<p align="center">
+<img src="./assets/0713MishLandScapeComparison.png" style="width:70%" />
+</p>
+
+[출처 : 꾸준희의 블로그](https://eehoeskrap.tistory.com/440)
+
+
 
 ## Hard Shrink function
 
