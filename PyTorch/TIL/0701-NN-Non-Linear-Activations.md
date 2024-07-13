@@ -39,8 +39,7 @@
 - `nn.GELU` : Applies the Gaussian Error Linear Units function. *
 - `nn.Sigmoid` : Applies the Sigmoid function element-wise.*
 - `nn.SiLU` : Applies the Sigmoid Linear Unit (SiLU) function, element-wise.*
-- `nn.Mish` : Applies the Mish function, element-wise.
-   - https://hongl.tistory.com/213 참고할 것
+- `nn.Mish` : Applies the Mish function, element-wise.*
 - `nn.Softplus` : Applies the Softplus function element-wise.
 - `nn.Softshrink` : Applies the soft shrinkage function element-wise. *
 - `nn.Softsign` : Applies the element-wise Softsign function.
@@ -448,7 +447,64 @@ smoothness 또한 위의 그림과 같이 output landscape을 부드럽게 만�
 
 output이 부드러워진다는 것은 곧 loss landscape 또한 매끄러워짐을 의미하고, 이는 곧 초기화와 learning rate에 강건한 모델을 만들 수 있게 해줌을 뜻한다.
 
+## Mish
 
+[Mish : A Self Regularized Non-Monotonic Activation Function](https://arxiv.org/pdf/1908.08681)
+
+[홍러닝](https://hongl.tistory.com/213)
+
+### definition
+
+$$
+Mish(x) = x*Tanh(Softplus(x))
+$$
+
+단, $Softplus(x) = ln(1+e^x)$
+
+<p align="center">
+<img src="./assets/0713Mish.png" style="width:35%" />
+</p>
+
+Swish (SiLU) 에서 영감을 받아 만들어진 비선형 함수. Swish의 특징들을 거의 고스란히 가지고 있다. (unbounded above, bounded below, non-monotonic(작은 음수 보존), smooth) $x$에 비선형함수를 적용한 후에, 그대로 x에 곱해주는 것을 "**Self-gating**"이라고 부르는데, Mish 역시 self-gating 함수이다.
+
+역시 더 나중에 나온 함수답게 ReLU, LReLU, Swish보다 좋은 성능을 자랑한다.
+Swish를 보고 그와 같은 특징을 갖는 여러 함수들을 테스트했는데, ($tanh(x)softplus(x)$ , $arctan(x)softplus(x)$ 등..) 대부분은 신경망이 깊어질 수록 학습이 불안정한 모습을 보였고, 비교 결과 Mish를 제안했다.
+
+> 함수들 생긴 것을 보면 다 비슷해 보이는데, 성능 차이가 난다는 것이 꽤나 신기하다. 생긴게 중요한게 아니라 수학적인 내부 구조가 중요한 것일까.
+
+미분해보자.
+
+$$
+f'(x) = sech^2(softplus(x))xsigmoid(x) + \frac{f(x)}{x}
+$$
+
+$$
+= \Delta (x)swish(x) + \frac{f(x)}{x}
+$$
+
+$\Delta(x)$ 가 gradient를 완만하게 만들어 주는 것을 실험적으로 관찰했다고 한다. 이를 마치 preconditioner 같다고 표현하는데, 이는 경사하강법에서 대칭정치행렬의 역행렬을 곱해 수렴의 속도를 증가시키는 것을 의미한다(??). 
+
+어쨌거나, 강력한 regularization 효과와 함께 gradient를 완만하게 만들어 최적화가 쉽게 해주는 것이 Swish를 능가할 수 있었던 이유라고 저자는 판단했다.
+
+#### 중요하니까 복습할 겸 한 번 더 적자.
+
+#### 작은 음수 보존
+Dying ReLU 예방, 표현력과 정보 흐름에 좋은 영향을 줌.
+
+#### Unbounded Above
+Saturation(포화)를 피함. 즉, near-zero gradient(학습속도 저하현상) 문제 없음.
+
+#### Continuously differentiable
+특이값 문제 (gradient에 구멍이 뚫려서 경사하강법 같은 것을 못쓰는) 없음.
+
+### loss landscape
+
+Mish의 가장 놀라운 점이 아닐까 싶다. 어떻게 저렇게 부드러운 landscape을 만드는지 신기할 정도.
+Swish도 꽤나 울퉁불퉁/뾰족뾰족한 loss를 보이는데 말이다. 위에서 언급한 $\Delta(x)$ 가 정말 좋은 영향을 미친 것 같다.
+
+<p align="center">
+<img src="./assets/0713MishLossLandscape.png" style="width:60%" />
+</p>
 
 ## Hard Shrink function
 
