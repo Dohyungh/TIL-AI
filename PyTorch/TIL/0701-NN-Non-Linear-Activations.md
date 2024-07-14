@@ -907,3 +907,23 @@ $$
 [출처: Ethan의 블로그](https://velog.io/@nochesita/%EC%B5%9C%EC%A0%81%ED%99%94%EC%9D%B4%EB%A1%A0-Binary-Cross-Entropy%EC%99%80-Softplus)
 
 핵심은, p = {0,1} 둘중에 하나의 값을 갖고, y = {-1,1}의 값을 갖기 때문에, 클래스가 두개인 경우에만 이를 Softplus 식으로 변형해 사용할 수 있다는 것이다.
+
+## Softsign
+
+### definition
+
+$$
+SoftSign(x) = \frac{x}{1+\left\vert x \right\vert}
+$$
+
+
+<p align="center">
+<img src="./assets/0715SoftSign.png" style="width:40%" />
+</p>
+
+`tanh` 이 지수적으로 수렴하는 것에 반해 `SoftSign`은 다항시간내에 수렴한다는 이점이 있어 그 대체재로 사용될 수 있다. 그러나, 실제로는 그리 많이 사용되지 않는다.
+
+$$
+SoftSign'(x) = \frac{1}{1+{\left\vert x \right\vert}^2}
+$$
+
