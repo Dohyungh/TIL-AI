@@ -40,7 +40,7 @@
 - `nn.Sigmoid` : Applies the Sigmoid function element-wise.*
 - `nn.SiLU` : Applies the Sigmoid Linear Unit (SiLU) function, element-wise.*
 - `nn.Mish` : Applies the Mish function, element-wise.*
-- `nn.Softplus` : Applies the Softplus function element-wise.
+- `nn.Softplus` : Applies the Softplus function element-wise.*
 - `nn.Softshrink` : Applies the soft shrinkage function element-wise. *
 - `nn.Softsign` : Applies the element-wise Softsign function.
 - `nn.Tanh` : Applies the Hyperbolic Tangent (Tanh) function element-wise. *
@@ -818,3 +818,92 @@ Kaggle NDSB 대회에서 처음 사용되었으며, 해당 대회 우승자는 $
 
 [Empirical Evaluation of Rectified Activations in Convolution Network](https://arxiv.org/pdf/1505.00853) 에 따르면, ReLU 보다 Leaky ReLU, PReLU(Parametric ReLU), RReLU가 더 성능이 좋았으나, 그 이유에 대해서는 아직 논의가 더 필요하다고 밝혔다. 특히 데이터셋의 크기에 따라(그중에서도, 더 거대한 데이터셋 에서.) 활성함수들이 어떻게 작용하는지에 대해 더 연구가 필요하다고 결론지었다.
 
+## Softplus
+
+### definition
+
+$$
+Softplus(x) = \frac{1}{\beta}*log(1+exp(\beta*x))
+$$
+
+<p align="center">
+<img src="./assets/0714Softplus.png" style="width:35%" />
+</p>
+
+ReLU의 부드러운 버전이다. output이 양의 범위로 한정된다.
+계산의 안정성을 위해서 $x(=input) \times \beta \gt threshold$ 이면 선형함수로 돌아간다.
+
+### `args`
+- `beta=1.0`
+- `threshold=20.0`
+
+### BCE loss
+
+[Ethan의 블로그](https://velog.io/@nochesita/%EC%B5%9C%EC%A0%81%ED%99%94%EC%9D%B4%EB%A1%A0-Binary-Cross-Entropy%EC%99%80-Softplus)
+
+Binary Classification, 0과 1로 분류하는 문제에서 loss function으로 주로 사용한다는 Binary Cross Entropy loss (BCE loss)는 코드를 뜯어보았을 때 `Softplus`를 쓰는 경우가 있다고 한다.
+
+---
+#### Sigmoid와 Softmax
+
+[Sigmoid-Softmax 일반화](https://velog.io/@gwkoo/logit-sigmoid-softmax%EC%9D%98-%EA%B4%80%EA%B3%84)
+
+[Sigmoid-Softmax의 차이점](https://insomnia.tistory.com/12)
+
+[logit, sigmoid, softmax의 관계](https://velog.io/@gwkoo/logit-sigmoid-softmax%EC%9D%98-%EA%B4%80%EA%B3%84)
+
+위 게시물들의 내용을 요약하자면,
+
+1. logit 과 sigmoid 는 역함수 관계이다.
+2. softmax 의 K개 클래스가 2개인 특수한 경우가 sigmoid 이다.
+3. sigmoid를 다수의 클래스로 일반화 한 것이 softmax이다.
+
+---
+다시 BCE loss에 대한 논의로 돌아와서,
+$\beta=1$ 일 때, `Softplus`를 미분해보자.
+
+$$
+\frac{\partial}{\partial x}Softplus(x) = \frac{\partial}{\partial x}log(1+exp(x)) = \frac{exp(x)}{1+exp(x)} = \frac{1}{1+exp(-x)}
+$$
+
+즉, `Softplus`를 미분하면, `Sigmoid`가 나온다.
+
+추가로, `Sigmoid`에 log를 씌워보자.
+
+$$
+log(Sigmoid(x)) = log(\frac{1}{1+exp(-x)}) \\ = -log(1+exp(-x)) \\ = -Softplus(-x)
+$$
+
+즉, `log(Sigmoid(x)) = -Softplus(-x)` 임을 알 수 있다.
+
+추가적으로 `Softplus`에 다음과 같은 성질들도 성립한다고 한다.
+
+1. $Softplus(x) - Softplus(-x) = x$
+2. $Softplus(x)^{-1}  = log(exp(-x)-1), \forall x \gt 0$
+
+---
+
+BCE는 일반적으로 다음과 같이 {0,1} binary class에 대한 log probability로 정의한다.
+
+$$
+BCE = \begin{cases}
+-log\hat{y}, &\text{where } y=1 \\
+-log(1-\hat{y}), &\text{where } y = -1
+\end{cases}
+$$
+
+N 개로 일반화해 그 엔트로피 값 ( $-p_{x}log(x)$ ) 의 형태로 변형해 다 더하는 총 loss 는 다음과 같다.
+
+$$
+BCE = -\Sigma^N (p_{y=1}log\hat{y} + (1-p_{y=1})log(\hat{y}))
+$$
+
+(평균은 위식을 $N$ 으로 나누면 된다.)
+
+<p align="center">
+<img src="./assets/0714SoftplusBCE.png" style="width:40%" />
+</p>
+
+[출처: Ethan의 블로그](https://velog.io/@nochesita/%EC%B5%9C%EC%A0%81%ED%99%94%EC%9D%B4%EB%A1%A0-Binary-Cross-Entropy%EC%99%80-Softplus)
+
+핵심은, p = {0,1} 둘중에 하나의 값을 갖고, y = {-1,1}의 값을 갖기 때문에, 클래스가 두개인 경우에만 이를 Softplus 식으로 변형해 사용할 수 있다는 것이다.
