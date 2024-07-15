@@ -1,52 +1,54 @@
 # Non-linear Activations (weighted sum, nonlinearity)
 
-1. Tensor  
-2. Dataset,DataLoader  
+1. Tensor
+2. Dataset,DataLoader
    1. `torch.utils.data`
 3. Transform
    1. `torchvision.transforms.v2`
       1. `v2.CutMix`
       2. `v2.MixUp`
    2. `torchvision.transforms`
-4. nn-model  
+4. nn-model
    1. `torch.nn`
-        1. Convolution Layers
-            1. Convolution
-               1. `nn.Conv#d`
-               2. `nn.ConvTranspose#d`
-        2. Pooling Layers
-        3. **Non-Linear Activations**
-5. Automatic-Differentiation  
-6. Parameter-Optimization  
-7. model-save-load  
+      1. Convolution Layers
+         1. Convolution
+            1. `nn.Conv#d`
+            2. `nn.ConvTranspose#d`
+      2. Pooling Layers
+      3. **Non-Linear Activations**
+5. Automatic-Differentiation
+6. Parameter-Optimization
+7. model-save-load
+
 ---
 
 ## nn.Non-Linear Activations (weighted sum, nonlinearity)
-- `nn.ELU` : Applies the Exponential Linear Unit (ELU) function, element-wise. *
-- `nn.Hardshrink` : Applies the Hard Shrinkage (Hardshrink) function element-wise. *
-- `nn.Hardsigmoid` : Applies the Hardsigmoid function element-wise. *
-- `nn.Hardtanh` : Applies the HardTanh function element-wise. *
-- `nn.Hardswish` : Applies the Hardswish function, element-wise. *
-- `nn.LeakyReLU` : Applies the LeakyReLU function element-wise. *
-- `nn.LogSigmoid` : Applies the Logsigmoid function element-wise. *
+
+- `nn.ELU` : Applies the Exponential Linear Unit (ELU) function, element-wise. \*
+- `nn.Hardshrink` : Applies the Hard Shrinkage (Hardshrink) function element-wise. \*
+- `nn.Hardsigmoid` : Applies the Hardsigmoid function element-wise. \*
+- `nn.Hardtanh` : Applies the HardTanh function element-wise. \*
+- `nn.Hardswish` : Applies the Hardswish function, element-wise. \*
+- `nn.LeakyReLU` : Applies the LeakyReLU function element-wise. \*
+- `nn.LogSigmoid` : Applies the Logsigmoid function element-wise. \*
 - `nn.MultiheadAttention` : Allows the model to jointly attend to information from different representation subspaces.
-- `nn.PReLU` : Applies the element-wise PReLU function. *
-- `nn.ReLU` : Applies the rectified linear unit function element-wise. *
-- `nn.ReLU6` : Applies the ReLU6 function element-wise. *
-- `nn.RReLU` : Applies the randomized leaky rectified linear unit function, element-wise. *
-- `nn.SELU` : Applies the SELU function element-wise.*
-- `nn.CELU` : Applies the CELU function element-wise.*
-- `nn.GELU` : Applies the Gaussian Error Linear Units function. *
-- `nn.Sigmoid` : Applies the Sigmoid function element-wise.*
-- `nn.SiLU` : Applies the Sigmoid Linear Unit (SiLU) function, element-wise.*
-- `nn.Mish` : Applies the Mish function, element-wise.*
-- `nn.Softplus` : Applies the Softplus function element-wise.*
-- `nn.Softshrink` : Applies the soft shrinkage function element-wise. *
-- `nn.Softsign` : Applies the element-wise Softsign function.
-- `nn.Tanh` : Applies the Hyperbolic Tangent (Tanh) function element-wise. *
-- `nn.Tanhshrink` : Applies the element-wise Tanhshrink function. *
-- `nn.Threshold` : Thresholds each element of the input Tensor.
-- `nn.GLU` : Applies the gated linear unit function.
+- `nn.PReLU` : Applies the element-wise PReLU function. \*
+- `nn.ReLU` : Applies the rectified linear unit function element-wise. \*
+- `nn.ReLU6` : Applies the ReLU6 function element-wise. \*
+- `nn.RReLU` : Applies the randomized leaky rectified linear unit function, element-wise. \*
+- `nn.SELU` : Applies the SELU function element-wise.\*
+- `nn.CELU` : Applies the CELU function element-wise.\*
+- `nn.GELU` : Applies the Gaussian Error Linear Units function. \*
+- `nn.Sigmoid` : Applies the Sigmoid function element-wise.\*
+- `nn.SiLU` : Applies the Sigmoid Linear Unit (SiLU) function, element-wise.\*
+- `nn.Mish` : Applies the Mish function, element-wise.\*
+- `nn.Softplus` : Applies the Softplus function element-wise.\*
+- `nn.Softshrink` : Applies the soft shrinkage function element-wise. \*
+- `nn.Softsign` : Applies the element-wise Softsign function.\*
+- `nn.Tanh` : Applies the Hyperbolic Tangent (Tanh) function element-wise. \*
+- `nn.Tanhshrink` : Applies the element-wise Tanhshrink function. \*
+- `nn.Threshold` : Thresholds each element of the input Tensor.\*
+- `nn.GLU` : Applies the gated linear unit function.\*
 
 ## Non-linear Activations (other)
 
@@ -62,7 +64,7 @@
 
 [기울기 소실(Vanishing Gradient)의 의미와 해결방법](https://heytech.tistory.com/388)
 
-[Gradient of ReLu at 0](https://discuss.pytorch.org/t/gradient-of-relu-at-0/64345/4)  
+[Gradient of ReLu at 0](https://discuss.pytorch.org/t/gradient-of-relu-at-0/64345/4)
 
 [Gradients for non-differentiable functions](https://pytorch.org/docs/stable/notes/autograd.html#gradients-for-non-differentiable-functions)
 
@@ -75,7 +77,9 @@ Linear Activation의 경우 단순한 행렬 곱인데, 이는 단순히 괄호�
 > 다만, 선형 활성함수를 사용한 층을 '은닉층'(비선형 활성함수를 사용하는) 과 구별해 '선형층'이라는 별개의 이름으로 부르기도 할 정도로 그 자체로 학습할 수 있는 weight이 생겨난다는 측면에서 의미가 아주 없지는 않다. [wikidocs.net](https://wikidocs.net/60683)
 
 ## 활성화 함수의 선택 tip (~~맹신금지~~)
+
 [출처](https://hwk0702.github.io/ml/dl/deep%20learning/2020/07/09/activation_function/)
+
 - 일반적으로 SELU > ELU > LeakyReLU(그리고 변종들) > ReLU > tanh > sigmoid 순
 - 네트워크가 자기 정규화되지 못하는 구조라면 SELU 보단 ELU
 - 실행 속도가 중요하다면 LeakyReLU(하이퍼파라미터를 더 추가하고 싶지 않다면 케라스에서 사용하는 기본값 α 사용)
@@ -100,7 +104,6 @@ $$
 <img src="./assets/0702sigmoid.png" style="width:35%" />
 </p>
 
-
 $$
 S'(x) = S(x)(1-S(x))
 $$
@@ -111,6 +114,7 @@ $$
 > 이에 더해, exp(x)의 계산을 근사치로 수행해야 하는 컴퓨터의 계산오차도 역시 계속해서 가산된다.
 
 #### Bias Shift(편향 이동)
+
 Sigmoid 함수의 Vanishing gradient를 가속시키는 이유가 하나 더 있는데, 바로 **Bias Shift** (편향 이동) 이다.
 Sigmoid 함수의 평균은 0이 아닌 0.25인데, 이는 즉 입력값의 합보다 출력층의 합이 더 커질 확률이 높다는 의미이다. 이것은 다시, gradient의 분포가 gradient의 최댓값인 0.25를 가지는 중간부보다는 양 극단에서 관찰될 확률이 점점 커진다는 뜻이다.
 
@@ -137,15 +141,16 @@ $$
 $$
 f(x) = max(0, x)
 $$
+
 <p align="center">
 <img src="./assets/0702ReLU.png" style="width:35%" />
 </p>
 
-0보다 큰 범위에서 기울기 1, 작은 범위에서 0의 기울기를 가진다. 
+0보다 큰 범위에서 기울기 1, 작은 범위에서 0의 기울기를 가진다.
 
-> 0에서는 0을 대입하는 것이 일반적인 듯 하다.   
-[Gradient of ReLu at 0](https://discuss.pytorch.org/t/gradient-of-relu-at-0/64345/4)  
-[Gradients for non-differentiable functions](https://pytorch.org/docs/stable/notes/autograd.html#gradients-for-non-differentiable-functions)
+> 0에서는 0을 대입하는 것이 일반적인 듯 하다.  
+> [Gradient of ReLu at 0](https://discuss.pytorch.org/t/gradient-of-relu-at-0/64345/4)  
+> [Gradients for non-differentiable functions](https://pytorch.org/docs/stable/notes/autograd.html#gradients-for-non-differentiable-functions)
 
 따라서, vanishing gradient 문제는 해결되었지만, 활성함수를 통과하지 못한 노드는 0이 곱해져 다시는 활성화 되지 못한다는 (Dying ReLU) 단점이 있습니다.
 
@@ -164,7 +169,6 @@ ReLU 함수의 단점을 보완하기 위해 음의 입력이 들어왔을 떄, 
 ---
 
 [Survey of Activation Functions](https://neverabandon.tistory.com/8) : 각종 활성함수들에 대해 잘 정리해 놓은 글
-
 
 <p align="center">
 <img src="./assets/0702FamilyOfActivationFunctions.png" style="width:60%" />
@@ -194,23 +198,23 @@ $$
 > ReLU 함수를 부드럽게 깎은 함수, $\alpha$는 대체로 1
 
 ### ELU, LReLU, ReLU, SReLU 비교
+
 <p align="center">
 <img src="./assets/0701ELU.png" style="width:35%" />
 </p>
 
 ### 특징
+
 - ReLU와 LReLU가 그랬던 것처럼, 양수 input을 받았을 때 기울기가 1이어서 vanishing gradinet를 예방한다.
 - ReLU가 음수 input에 대해서 단순히 0의 값을 취하는 것에 반해 ELU는 음수의 값을 취한다. 이는 Mean activations을 0으로 (일종의 편향이동 관점) 밀어줌으로써 gradient가 natural gradient(분포의 관점에서의 gradient) 에 더 가까워 지게 해 더 빠른 학습이 가능하도록 한다.
-> - negative 체제(regime)에서 분명한 saturation 고원(plateau)을 가지고 있기 때문에, 보다 강건한 표현(representations)을 학습할 수 있음. 특히 5개 layer 이상의 특정한 network 구조를 가진 ReLU 및 LReLU에 비해 좀 더 빠른 학습 속도와 좀 더 나은 일반화(generalization)를 제공함. 또한, ReLU의 변종들에 비해 state-of-the-art 결과를 보장함.(??????) [출처](https://neverabandon.tistory.com/8)
+  > - negative 체제(regime)에서 분명한 saturation 고원(plateau)을 가지고 있기 때문에, 보다 강건한 표현(representations)을 학습할 수 있음. 특히 5개 layer 이상의 특정한 network 구조를 가진 ReLU 및 LReLU에 비해 좀 더 빠른 학습 속도와 좀 더 나은 일반화(generalization)를 제공함. 또한, ReLU의 변종들에 비해 state-of-the-art 결과를 보장함.(??????) [출처](https://neverabandon.tistory.com/8)
 
 [Natural Gradient를 위해 보면 좋을 글](https://rlwithme.tistory.com/5)
 
-
-> ++ GELU를 공부하다가 위의 말이 좀 이해가 가기 시작해서 추가로 적음 (0711)  
+> ++ GELU를 공부하다가 위의 말이 좀 이해가 가기 시작해서 추가로 적음 (0711)
 
 > ReLU의 dying neuron 현상을 해결하기 위해서 Leaky ReLU 같은 것이 고안되었는데, 그 음수의 기울기는 모든 범위에서 일정하고, 한계가 없다. 이는 뉴런을 **죽이지는** 않지만, 결국 큰 음수값으로 귀결돼어 최종 출력층에서는 뉴런이 활성화 되지 않게 해서 학습에 악영향을 미칠 수 있다.  
 > 따라서, negative regime (음수 영역) 에서 그 미분과 값 자체에 나름의 제한을 주었으면 좋겠다는 생각을 하게 됨. 이에 ELU, GELU 등이 탄생한게 아닌가 생각해본다.
-
 
 ## SELU (Scaled ELU)
 
@@ -230,12 +234,12 @@ x &\text{if } x\gt 0 \\
 \end{cases}
 $$
 
-
 <p align="center">
 <img src="./assets/0709SELU.png" style="width:35%" />
 </p>
 
 ### 특징
+
 [Self-Normalizing Neural Networks](https://arxiv.org/pdf/1706.02515)
 
 Self-Normalizing NN 을 만들기 위해 고안된 활성함수로, 각각의 활성함수 $y$에 대해 이전 층에서의 평균과 분산에 함수 $g$ 를 적용해 다음 층의 평균과 분산을 구할 수 있다면, 이 NN을 Self-normalizing 하다고 정의했다.
@@ -251,15 +255,17 @@ Self-Normalizing NN 을 만들기 위해 고안된 활성함수로, 각각의 �
 
 > 완전 연결층만 쌓아서 신경망을 만들고 모든 은닉층을 SELU 를 쓰면 신경망이 self-normalized 된다고 주장  
 > 훈련하는 동안 출력이 평균 0, 표준편차 1을 유지  
-> 종종 다른 활성 함수보다 뛰어나지만, 조건이 까다로움  
+> 종종 다른 활성 함수보다 뛰어나지만, 조건이 까다로움
+>
 > 1. input이 표준화 되어 있어야 한다.
 > 2. 모든 은닉층의 가중치는 르쿤 정규분포로 초기화
 > 3. 네트워크는 일렬로 쌓여야 함. RNN 같이 순차적이지 않으면 self-normalized 보장이 안됨  
-> [출처](https://hwk0702.github.io/ml/dl/deep%20learning/2020/07/09/activation_function/)
+>    [출처](https://hwk0702.github.io/ml/dl/deep%20learning/2020/07/09/activation_function/)
 
 ## CELU (Continuously Differentiable ELU)
 
 ### definition
+
 $$
 CELU(x) = max(0,x) + min(0,\alpha * (exp(x/\alpha)-1))
 $$
@@ -325,7 +331,7 @@ $$
 
 ## GELU (Gaussian Error Linear Units function)
 
-[GELU](./assets/0711GaussianErrorLinearUnits(GELUs).pdf) 논문 그리 길지도 않고 매우 읽어볼만 하다.
+[GELU](<./assets/0711GaussianErrorLinearUnits(GELUs).pdf>) 논문 그리 길지도 않고 매우 읽어볼만 하다.
 
 [위 논문을 정리한 블로그](https://hongl.tistory.com/236)
 
@@ -339,14 +345,11 @@ $\Phi(x)$ 는 Cumulative Function for Gaussian Distribution.
 
 `arg` 로 `approximate='none'`을 지정할 수 있는데, 이를 만약 `'tanh'`로 지정하면, Gelu는 다음과 같이 근사된다. (그러나, 근사하지 않고 원본 함수를 쓰는 것이 충분히 빨라서 쓰일 일이 별로 없다.)
 
-
 $$
 GELU(x) = 0.5 * x * (1+Tanh( (\sqrt{\frac{2}{\pi}}) * (x+0.044715 * {x^3}) ))
 $$
 
-
 [A Simple Approximation to the Area Under Standard Normal Curve](./assets/0711ASimpleApproximationtotheAreaUnderStandard.pdf)에서 나온 아래 식을 썼다.
-
 
 <p align="center">
 <img src="./assets/0711GeluApproximation.png" style="width:50%" />
@@ -371,6 +374,7 @@ Computer Vision, NLP, Speech Recognition 에서 최고 성능을 내는 모델�
 dropout, zoneout 및 ReLU의 속성을 결합한 함수를 만들자는 생각에서 고안되었다.
 
 핵심 아이디어는 다음의 두가지이다.
+
 - Deterministic이 아닌(ReLU) 확률적으로(=dropout) 0 / 1 masking을 곱해주자
 - 단, 확률을 결정하는 것은 x의 부호가 아닌(ReLU) 값이 었으면 한다.
 
@@ -380,6 +384,7 @@ dropout, zoneout 및 ReLU의 속성을 결합한 함수를 만들자는 생각�
 ReLU 가 단순히 부호에 의해 masking 하는 것에 비해, GELU는 다른 input에 대해 해당 input이 얼마나 크냐에 따라 masking 한다.
 
 ### 특징
+
 - bounded below
 - non-monotonic
 - unbounded above
@@ -392,6 +397,7 @@ $\mu = 0$ 이고, $\sigma \rightarrow 0$ 이면 GELU는 ReLU가 되기 떄문에
 ## SiLU (Sigmoid Linear Unit)
 
 ### definition
+
 #### **swish function**이라고도 부른다.
 
 $$
@@ -401,7 +407,6 @@ $$
 $\sigma(x)$ 는 logistic sigmoid 이다.
 
 최초에 GELU 에서 기원했다. 그 이후에 다음의 두 논문에서 실험을 거치며 그 존재가 드러났다.
-
 
 [Sigmoid-Weighted Linear Units for Neural Network Function Approximation in Reinforcement Learning](https://arxiv.org/pdf/1702.03118)
 
@@ -430,6 +435,7 @@ saturation을 피할 수 있기에 Unboundedness는 바람직하다. gradient가
 반면에, 음수 영역에서는 bounded 되는 것이 바람직한데, 강력한 normalization 효과가 있기 때문이다. 덕분에 큰 음수 input은 잘 "잊혀진"다.
 
 ### non-monotonicity
+
 비단조증가라는 점은 결과적으로, 작은 음의 input에 대해서도 음의 output들을 만들어낸다는 특징을 만든다.
 이런 특징은 표현력(expressivity)와 gradient flow를 개선시키는데, 대부분의 Preactivations 들이 해당 범위에서 시작한다는 점에서 더 중요하다. 다음의 히스토그램으 보면, 대부분 0보다 약간 작은 값에 많이 떨어져 있는 것을 볼 수 있다.
 
@@ -437,7 +443,7 @@ saturation을 피할 수 있기에 Unboundedness는 바람직하다. gradient가
 <img src="./assets/0712SiLUPreactivations.png" style="width:60%" />
 </p>
 
-### Smoothness 
+### Smoothness
 
 <p align="center">
 <img src="./assets/0712SiLUAdvantages.png" style="width:60%" />
@@ -482,20 +488,24 @@ $$
 = \Delta (x)swish(x) + \frac{f(x)}{x}
 $$
 
-$\Delta(x)$ 가 gradient를 완만하게 만들어 주는 것을 실험적으로 관찰했다고 한다. 이를 마치 preconditioner 같다고 표현하는데, 이는 경사하강법에서 대칭정치행렬의 역행렬을 곱해 수렴의 속도를 증가시키는 것을 의미한다(??). 
+$\Delta(x)$ 가 gradient를 완만하게 만들어 주는 것을 실험적으로 관찰했다고 한다. 이를 마치 preconditioner 같다고 표현하는데, 이는 경사하강법에서 대칭정치행렬의 역행렬을 곱해 수렴의 속도를 증가시키는 것을 의미한다(??).
 
 어쨌거나, 강력한 regularization 효과와 함께 gradient를 완만하게 만들어 최적화가 쉽게 해주는 것이 Swish를 능가할 수 있었던 이유라고 저자는 판단했다.
 
 ### 특징
+
 거의 Swish와 동일하다.
 
 #### 작은 음수 보존
+
 Dying ReLU 예방, 표현력과 정보 흐름에 좋은 영향을 줌.
 
 #### Unbounded Above
+
 Saturation(포화)를 피함. 즉, near-zero gradient(학습속도 저하현상) 문제 없음.
 
 #### Continuously differentiable
+
 특이값 문제 (gradient에 구멍이 뚫려서 경사하강법 같은 것을 못쓰는) 없음.
 
 ### loss landscape
@@ -507,17 +517,15 @@ Swish도 꽤나 울퉁불퉁/뾰족뾰족한 loss를 보이는데 말이다. 위
 <img src="./assets/0713MishLossLandscape.png" style="width:60%" />
 </p>
 
-> local min이 눈에 띄게 줄어든 점은 분명 좋은 점이지만, 최적화의 **속도** 면에서는 Swish가 더 빠르지 않을까 싶다.   
+> local min이 눈에 띄게 줄어든 점은 분명 좋은 점이지만, 최적화의 **속도** 면에서는 Swish가 더 빠르지 않을까 싶다.  
 > 다른 얘기지만 computing 면에서 Mish가 Swish보다 느리다는 포스팅도 있었다.  
-> 어찌보면 더 완만한 landscape을 만든다는건 반대로 분명히 구분해내야할 contour에서는 더 안 좋은 성능을 보이지 않을까 하는 개인적인 생각이 든다.  
+> 어찌보면 더 완만한 landscape을 만든다는건 반대로 분명히 구분해내야할 contour에서는 더 안 좋은 성능을 보이지 않을까 하는 개인적인 생각이 든다.
 
 <p align="center">
 <img src="./assets/0713MishLandScapeComparison.png" style="width:70%" />
 </p>
 
 [출처 : 꾸준희의 블로그](https://eehoeskrap.tistory.com/440)
-
-
 
 ## Hard Shrink function
 
@@ -530,7 +538,6 @@ HardShrink(x) = \begin{cases}
    0 &\text{otherwise}
 \end{cases}
 $$
-
 
 <p align="center">
 <img src="./assets/0703HardShrink.png" style="width:35%" />
@@ -552,7 +559,6 @@ $$
 <img src="./assets/0703SoftShrink.png" style="width:35%" />
 </p>
 
-
 ## Tanhshrink function
 
 ### definition
@@ -567,16 +573,15 @@ $$
 ---
 
 > TanhShrink와 HardShrink는 잠재변수 값을 계산하기 위한 희소코딩외에는 거의 사용되지 않는다.  
-[Shrink activation function Usage](https://deeesp.github.io/deep%20learning/DL-Activation-Functions/#hardshrink---nnhardshrink)
->> **잠재변수(Latent Variable)** : 신호를 이루는 기저 신호들, 직접 측정할 수 없어 통계적 방법론으로 추정함.
->> **희소코딩** : 잠재변수를 알아내기 위해 알고리즘을 돌리는 것(?) 그 결과가 희소 행렬 형태로 나온다(?)  
-[희소코딩?](https://wordbe.tistory.com/134)
->> $$x=Da \\ \text{ where } D = (d_1d_2...d_m)$$
->> x : 영상(신호)  
->> $D$ : 사전(dictionary) (희소행렬)  
->> $a$ : 희소코드 (계수집합)  
->> $d_i$ : 사전요소
-
+> [Shrink activation function Usage](https://deeesp.github.io/deep%20learning/DL-Activation-Functions/#hardshrink---nnhardshrink)
+>
+> > **잠재변수(Latent Variable)** : 신호를 이루는 기저 신호들, 직접 측정할 수 없어 통계적 방법론으로 추정함.
+> > **희소코딩** : 잠재변수를 알아내기 위해 알고리즘을 돌리는 것(?) 그 결과가 희소 행렬 형태로 나온다(?)  
+> > [희소코딩?](https://wordbe.tistory.com/134) >> $$x=Da \\ \text{ where } D = (d_1d_2...d_m)$$
+> > x : 영상(신호)  
+> > $D$ : 사전(dictionary) (희소행렬)  
+> > $a$ : 희소코드 (계수집합)  
+> > $d_i$ : 사전요소
 
 ## Hard Sigmoid fuction
 
@@ -599,7 +604,6 @@ $$
 - binary weights(-1, 1) 만으로 빠르고 저렴하게 심층 신경망을 만들고 싶을 떄 사용하면 아주 좋다.
 - software 적으로도 그렇고, 어떤 hardware 가속기를 사용하든지 상관 없이 좋은 성능을 보였다고 한다.
 
-
 ## Hard Tanh function
 
 ### definition
@@ -616,7 +620,7 @@ $$
 <img src="./assets/0703HardTanh.png" style="width:35%" />
 </p>
 
-> Tanh function의 계산적인 효율성을 고려한 버전임.   
+> Tanh function의 계산적인 효율성을 고려한 버전임.  
 > 자연어 처리에서 성공적으로 적용 되었음 [출처](http://www.jmlr.org/papers/volume12/collobert11a/collobert11a.pdf)
 
 ## Hard Swish function
@@ -644,20 +648,23 @@ $$
 $$
 f(x) = max(0, x)
 $$
+
 <p align="center">
 <img src="./assets/0702ReLU.png" style="width:35%" />
 </p>
 
-0보다 큰 범위에서 기울기 1, 작은 범위에서 0의 기울기를 가진다. 
+0보다 큰 범위에서 기울기 1, 작은 범위에서 0의 기울기를 가진다.
 
 ### 장점
+
 - 빠른 학습
 - Sigmoid, Tanh actiation function에 비해서 보다 우수한 성능 및 일반화
 - linear model 의 장점인 gradient-descent 를 최적화에 적극적으로 사용할 수 있다는 장점을 계승함
 - 빠른 계산 (지수, 나눗셈 없음)
-> 0에서 최대 사이의 범위를 가지는 값들을 뭉개버림(squishes)으로써 hidden units에 희소성(sparcity)을 도입할 수 있음 (?)
+  > 0에서 최대 사이의 범위를 가지는 값들을 뭉개버림(squishes)으로써 hidden units에 희소성(sparcity)을 도입할 수 있음 (?)
 
 ### 단점
+
 - Sigmoid 에 비해 쉽게 Overfitting되는 경향이 있고, 이를 줄이기 위해 dropout 기법이 적용됨.
 - dead neuron이 학습에 방해를 야기함
 
@@ -691,15 +698,16 @@ $$
 [log sigmoid 근사](https://bab2min.tistory.com/626)
 
 위 링크에서는,
+
 - word2vec을 확장한 모형에서 LogSigmoid를 사용한 코드를 구현했는데
 - 그 계산 비용에 지수와 로그가 포함되어 전체적인 성능향상이 필요했다.
 - 근사를 계산하는 방식으로 성능을 개선했는데, 구체적인 방법은 이렇다.
 - x<0 에서
-   1. S(x) = logsigmoid(x)
-   2. S(x) ~ $-log(e^(-x))$ = x
-   3. S(x) - x = 오차 = $log(1+e^x)$ = S(-x)
+  1.  S(x) = logsigmoid(x)
+  2.  S(x) ~ $-log(e^(-x))$ = x
+  3.  S(x) - x = 오차 = $log(1+e^x)$ = S(-x)
 - 인데 x>0 에서 함수는 0에 매우 빨리 근접하므로, 0에 아직 충분히 가깝지 않은 부분까지만(대략 x=32) 테이블로 구해놓고, 그 이상은 0으로 퉁치는 방법을 썼다.
-> 손실함수로 더 많이 쓰인다는 것을 제외하고는 나오는 게 별로 없다.
+  > 손실함수로 더 많이 쓰인다는 것을 제외하고는 나오는 게 별로 없다.
 
 ## Multi-Head Attention
 
@@ -711,7 +719,7 @@ Transformer 문서에 별도 작성
 
 $$
 PReLU(x) = max(0,x) + a*min(0,x) \\ or
-\\  
+\\
 PReLU(x) = \begin{cases}
 x &\text{if } x\geq0\\
 ax &\text{otherwise}
@@ -727,6 +735,7 @@ $a$는 학습 파라미터로, `num_parameters=1`에 아무것도 넘겨 주지 
 > weight decay는 성능을 위해서는 사용되지 않아야 한다.
 
 ### 특징
+
 $a$는 음수 부분의 기울기를 결정하는 변수인데, back-prop 과정에서 학습이 가능하다. $a=0$인 경우 PReLU는 ReLU와 같아진다.
 
 > Large scale Image Recognition에서 ReLU보다 성능이 우수하다. Visual Recognition Challenge에서 사람 수준의 성능을 처음으로 넘었다고 한다. [출처](https://neverabandon.tistory.com/8)
@@ -741,7 +750,6 @@ $a$는 음수 부분의 기울기를 결정하는 변수인데, back-prop 과정
 [Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification](https://arxiv.org/abs/1502.01852)
 
 최적화 과정이 궁금해 찾아보았다. 실제로는 momentum(4번 식에서 $\mu$)을 적용하며, 수식은 위에 써져 있는 것과 같다. 그 과정에서 weight decay (= l2 정규화) 를 사용하게 되면 $a$의 절댓값이 계속해서 줄어들면서 0이 되어 ReLU와 같아지기 때문에, 사용하지 않았다고 한다. 정규화 없이도 최댓값이 1을 넘지 않았고, 활성함수가 단조 증가하지 않도록 $a$의 범위를 제한하지도 않았다고 한다. 목적함수에 대한 $a$의 gradient를 계산할 때 layer의 모든 채널에 대해 더해주어야 하는데, 이 정도의 시간복잡도는 forward, backprop 모두에서 무시가능한 수준이라고 한다.
-
 
 ## ReLU6
 
@@ -759,21 +767,22 @@ $$
 <img src="./assets/0707ReLU6.png" style="width:35%" />
 </p>
 
-**상한선을 6으로 둔 ReLU** 함수라고 생각하면 된다. 여기서 
+**상한선을 6으로 둔 ReLU** 함수라고 생각하면 된다. 여기서
 
 **상한선을 두는 이유**는
 
 - (embedded 영역에서 특히) 표현하는데 필요한 bit를 절약하기 위해서,
 - sparse한 feature를 더 일찍 학습할 수 있게 되기 때문에, 이며
 
-**그 숫자가 6인 이유**는  
+**그 숫자가 6인 이유**는
 
 - 단순히 성능이 좋았기 때문이라고 한다.
 
 ### 분포 측면
+
 bias만큼 평행이동한 6개의 베르누이 분포로 구성된 ReLU 유닛
 
- vs 무한개의 베르누이 분포 로 일반적인 ReLU와의 차이를 설명했다.
+vs 무한개의 베르누이 분포 로 일반적인 ReLU와의 차이를 설명했다.
 
 이에 따라 Noise Model 의 표준편차도 변형된 것을 사용했는데,
 원래는 $\frac{1}{1+e^{-x}}$ 의 표준편차를 지닌 정규분포를 사용하지만 Alex Krizhevsky는
@@ -787,14 +796,13 @@ $$
 
 를 사용했다.
 
-이를 요약하면, $y$ 가 6에 근접했을 때는 두 모델이 거의 같아지지만, 0부근에서는 0을 조금이라도 초과하면 갑자기 매우 큰 편차의 noise 페널티를 주는 것이다. 
+이를 요약하면, $y$ 가 6에 근접했을 때는 두 모델이 거의 같아지지만, 0부근에서는 0을 조금이라도 초과하면 갑자기 매우 큰 편차의 noise 페널티를 주는 것이다.
 
 이는 자연이미지를 대상으로 하는 비지도 학습이 널리 채용하는 sparseness-inducing tricks에 기인한 것이다.
 
 Alex Krizhevsky의 모델의 filter들은 weights 는 공유하지만, bias는 공유하지 않는데, 이는 또한 "이미지의 굳이 모든 부분에서 좋은 성능을 발휘하지 않아도 되는" 필터를 학습할 수 있게 하는 효과가 있다.(~~직역하니 어려운데, 그냥 중요한 부분에 집중해 학습한다는 뜻인 것 같다.~~)
 
 > CNN 을 확률 분포 적인 측면으로 바라보는 것이라 굉장히 낯설고 모르는 개념이 많이 나오는데, (mean-field $y$,, energy,, sparse feature) 좀 더 공부해 봐야 겠다. Alex Krizhevsky가 자기 모델의 원류로서 참고한 논문은 [ReLU improve Restricted Boltzmann Machines](https://www.cs.toronto.edu/~fritz/absps/reluICML.pdf)이다.
-
 
 ## RReLU (randomized leaky ReLU)
 
@@ -806,7 +814,6 @@ x &\text{if } x\geq 0 \\
 ax &\text{otherwise}
 \end{cases}
 $$
-
 
 <p align="center">
 <img src="./assets/0708RReLU.png" style="width:35%" />
@@ -834,6 +841,7 @@ ReLU의 부드러운 버전이다. output이 양의 범위로 한정된다.
 계산의 안정성을 위해서 $x(=input) \times \beta \gt threshold$ 이면 선형함수로 돌아간다.
 
 ### `args`
+
 - `beta=1.0`
 - `threshold=20.0`
 
@@ -844,6 +852,7 @@ ReLU의 부드러운 버전이다. output이 양의 범위로 한정된다.
 Binary Classification, 0과 1로 분류하는 문제에서 loss function으로 주로 사용한다는 Binary Cross Entropy loss (BCE loss)는 코드를 뜯어보았을 때 `Softplus`를 쓰는 경우가 있다고 한다.
 
 ---
+
 #### Sigmoid와 Softmax
 
 [Sigmoid-Softmax 일반화](https://velog.io/@gwkoo/logit-sigmoid-softmax%EC%9D%98-%EA%B4%80%EA%B3%84)
@@ -859,6 +868,7 @@ Binary Classification, 0과 1로 분류하는 문제에서 loss function으로 �
 3. sigmoid를 다수의 클래스로 일반화 한 것이 softmax이다.
 
 ---
+
 다시 BCE loss에 대한 논의로 돌아와서,
 $\beta=1$ 일 때, `Softplus`를 미분해보자.
 
@@ -916,7 +926,6 @@ $$
 SoftSign(x) = \frac{x}{1+\left\vert x \right\vert}
 $$
 
-
 <p align="center">
 <img src="./assets/0715SoftSign.png" style="width:40%" />
 </p>
@@ -927,3 +936,72 @@ $$
 SoftSign'(x) = \frac{1}{1+{\left\vert x \right\vert}^2}
 $$
 
+## Threshold
+
+### definition
+
+$$
+y = \begin{cases}
+x & \text{if } x \gt threshold \\
+value &\text{otherwise}
+\end{cases}
+$$
+
+[미분가능해야한다.](https://stackoverflow.com/questions/71409752/training-with-threshold-in-pytorch)
+
+## GLU (Gated Linear Unit)
+
+### definition
+
+$$
+GLU(a,b) = a \otimes \sigma(b)
+$$
+
+$a$ 는 input 행렬의 첫 절반이고, $b$ 는 나머지 절반이다.
+
+$\otimes$ 는 element-wise 행렬 곱이다.
+
+### `args`
+
+- `dim=-1` : input을 어느 차원에서 둘로 쪼갤 것인가?
+
+Input : ($*_1, N, *_2$)
+Output : ($*_1, N/2, *_2$)
+
+### 특징
+
+[PaperswithCode](https://paperswithcode.com/method/glu)
+
+자연어 처리, 예를 들면 Gated CNN에서 쓰인다.
+
+식을 좀 더 직관적으로 이해하자면, $b$ 가 $a$ 의 어느 정보가 다음 layer까지 전달될지를 결정하는 gate의 역할을 한다.
+
+> 이를 자연어 처리에 접목해 앞에 나온 단어들 중에 어떤 단어들만 추려서 다음 단어를 추론할 것인가를 결정하는 gate로 사용한다.
+
+#### Gated Convolutional network
+
+[Language Modeling with Gated Convolutional Networks](https://arxiv.org/pdf/1612.08083v3)
+에서 소개 되었다.
+
+[Gated Linear Unit — Enabling stacked convolutions to out-perform RNNs](https://medium.com/@pragyansubedi/gated-linear-unit-enabling-stacked-convolutions-to-out-perform-rnns-ea08daa653b8) 의 요약을 보고 작성했다.
+
+본 논문이 소개될 당시에는 Recurrent NN(RNN)이 자연어 처리 쪽을 꽉 잡고 있었는데, Non-Recurrent 한 모델로 RNN보다 좋은 지표를 보인 것을 강조하고 있다.
+
+> 세부적으로는 LSTM의 형태를 많이 참고했다고 한다.
+
+RNN이 좋은 성능을 보일 수 있었던 것은, 한계가 없이 넓은 범위의 context를 이해시킬 수 있었던 것이다.
+
+GCN (Gated Convolutional Network)이 RNN 보다 좋은 점은 크게 다음의 두가지이다.
+
+1. 맥락 정보를 $O(N)$ 이 아닌 $O(N/k)$ ($k$ 는 kernel size) 번의 layer stacking 으로 처리할 수 있다.
+
+2. GPU를 필두로 한 동시 Computing의 이점을 누릴 수 있다.
+
+결국 종합하면 RNN은 Sequential한 모델이기 때문에, 작업에 순서가 존재하고 이전의 작업이 끝나기 전에는 다음을 진행할 수가 없다. 따라서 동시 computing의 이점을 누릴 수가 없었는데, 마치 Transformer가 그렇듯 (~~Transformer가 더 나중인가?~~) 누릴 수 있게 되었다!
+
+<p align="center">
+<img src="./assets/0716GLU.png" style="width:60%" />
+</p>
+
+> 위 그림에서 convolution 단계에서 보면 두 개의 서로 다른 weight ( $W$ , $V$ )를 통과한 $A$ 와 $B$ 가 하나는 그대로, 하나는 sigmoid 를 거쳐 연산되는 것을 볼 수 있다.  
+> 결국 똑같이 $E$ 에서 시작한 값들이라는 점에 주목하자.
