@@ -1005,3 +1005,15 @@ GCN (Gated Convolutional Network)이 RNN 보다 좋은 점은 크게 다음의 �
 
 > 위 그림에서 convolution 단계에서 보면 두 개의 서로 다른 weight ( $W$ , $V$ )를 통과한 $A$ 와 $B$ 가 하나는 그대로, 하나는 sigmoid 를 거쳐 연산되는 것을 볼 수 있다.  
 > 결국 똑같이 $E$ 에서 시작한 값들이라는 점에 주목하자.
+
+## Softmin
+
+### definition
+
+$$
+Softmin(x_i) = \frac{exp(-x_i)}{\Sigma_j exp(-x_j)}
+$$
+
+Softmax 와 동일하게 총합이 1이고 각각이 [0,1] 사이에 떨어지도록 Rescale 해준다.
+
+단, 음수로 변해서 지수에 전달되기 때문에 원래 input 값이 작을 수록 확률은 더 큰 값을 갖게 된다.
