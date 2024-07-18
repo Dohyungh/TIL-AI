@@ -905,7 +905,7 @@ $$
 N 개로 일반화해 그 엔트로피 값 ( $-p_{x}log(x)$ ) 의 형태로 변형해 다 더하는 총 loss 는 다음과 같다.
 
 $$
-BCE = -\Sigma^N (p_{y=1}log\hat{y} + (1-p_{y=1})log(\hat{y}))
+BCE = -\sum^N (p_{y=1}log\hat{y} + (1-p_{y=1})log(\hat{y}))
 $$
 
 (평균은 위식을 $N$ 으로 나누면 된다.)
@@ -1011,9 +1011,84 @@ GCN (Gated Convolutional Network)이 RNN 보다 좋은 점은 크게 다음의 �
 ### definition
 
 $$
-Softmin(x_i) = \frac{exp(-x_i)}{\Sigma_j exp(-x_j)}
+Softmin(x_i) = \frac{exp(-x_i)}{\sum_j exp(-x_j)}
 $$
 
 Softmax 와 동일하게 총합이 1이고 각각이 [0,1] 사이에 떨어지도록 Rescale 해준다.
 
 단, 음수로 변해서 지수에 전달되기 때문에 원래 input 값이 작을 수록 확률은 더 큰 값을 갖게 된다.
+
+## Softmax
+
+### definition
+
+$$
+Softmax(x_i) = \frac{exp(x_i)}{\sum_j exp(x_j)}
+$$
+
+[Why use softmax as opposed to standard normalization?](https://stackoverflow.com/questions/17187507/why-use-softmax-as-opposed-to-standard-normalization)
+
+이름 그대로 max 값을 취하는 것의 soft 한 버전이라고 직관적으로 이해하는 것이 꽤나 들어맞는다.
+
+이 단락의 중요 포인트는 그래서 왜 softmax를 전부 모델의 마지막에 사용하는가? 이다.
+
+[로지스틱 회귀의 손실 함수](https://kh-kim.github.io/nlp_with_deep_learning_blog/docs/1-08-logistic_regression/03-bce_loss/#footnote_1)
+에서는, 회귀분석이 logistic 회귀로 넘어오면서 회귀가 아닌 분류 문제로 생각하게 되고, Binary Category의 분류 문제에서 sigmoid의 출력을 0.5를 기준으로 분류할 수 있는 이유는,
+**분류 문제를 확률 문제로 접근할 수 있기 때문이라고 설명한다.**
+
+이제부터는 MSE(Mean Squared Error)를 최소화하는 old 한 최적화 방식에서 벗어나서 확률의 세계에서 문제를 바라보겠다는 뜻이다.
+
+> 그러면서 나오는 개념들이 MLE(Most Likelihood Estimator). 딸려서 또 이재욱 교수님께 배웠던 개념이 BLUE 같은 것들이다.
+
+분포와 확률의 세계로 넘어오면서, Cross-Entropy를 loss 함수로 쓰기 시작한다. 분포와 분포 사이의 거리를 재는 것인데, 결국 KL Divergence
+
+$$
+D_{KL}(p||q) = \sum_x{ p(x)log{\frac{p(x)}{q(x)}}}
+$$
+
+를 최소화하는 것이 목표가 된다.
+
+제일 위에 있는 [stackoverflow](https://stackoverflow.com/questions/17187507/why-use-softmax-as-opposed-to-standard-normalization)링크에서는 그래서 softmax 함수의 $exp$ 함수가 cross-entropy의 $log$ 를 상쇄시켜주면서, gradient를 완만하게 만들어 모델이 잘못돼서 softmax가 saturated 돼도 벗어날 수 있게 해준다고 설명한다. (**Very short Explanation**)
+
+모든 데이터의 likelihood는 결국 각각의 데이터에 대한 likehood를 합치는 것이므로,
+
+log-likelihood를 구할 때 우리는 다음 식을 사용한다.
+
+$$
+\argmax_{\theta}\sum_{k=1}^{m}log(P(y^{(k)}|x^{(k)};\theta))
+$$
+
+이때 softmax 함수를 사용한다는 것은,
+
+$$
+
+P(y^{(k)}|x^{(k)};\theta) = P(y^{(k)}|z) = softmax(z)_i
+
+
+$$
+
+와 같이 확률 부분을 "$k$ 번째 데이터의 정확한 클래스는 $i$" 라고 정한 것이다.
+
+이에 더해서 데이터의 log-likehood를 구하기 위해 log softmax를 구하면
+분모, 분자가 갈라지면서
+
+$$
+logsoftmax(z)_i = z_i - log{\sum_j{exp(z_j)}}
+$$
+
+로 써지는데 원래 stackoverflow에 질문자가 올린 질문은 여기서 그냥
+
+$$
+z_i - \max_{j}{z_j}
+$$
+
+를 쓰면 안되냐는 것이다.
+
+이렇게 보면 꽤나 다른 것이 느껴진다. max 함수의 행동은 그냥 모델이 부정확할 때, $z_i$ 를 증가시키고, 최댓값 $z_j$ 를 감소시키는 것이다. 이건 분명 우리가 원하는 것이 아니다.
+
+정리하면,
+
+모델이 잘못돼서 softmax 가 saturated되어 갈 때도, loss 함수는 saturated 되지 않고, 최댓값 $z_j$ 주변에서 선형-완만한 gradient ($log$ 와 $exp$ 의 상쇄)
+를 만들어주어 계속 학습이 이어질 수 있도록 해준다.
+
+이 내용은 MIT에서 2016년 출판한 [Deep Learning](https://www.deeplearningbook.org/) 에서 기반했다고 한다.
