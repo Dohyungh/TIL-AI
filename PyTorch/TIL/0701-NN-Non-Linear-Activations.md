@@ -1055,19 +1055,16 @@ $$
 log-likelihood를 구할 때 우리는 다음 식을 사용한다.
 
 $$
-\argmax_{\theta}\sum_{k=1}^{m}log(P(y^{(k)}|x^{(k)};\theta))
+\underset{\theta}{\operatorname{argmax}}\sum_{k=1}^{m}log(P(y^{(k)}|x^{(k)};\theta))
 $$
 
 이때 softmax 함수를 사용한다는 것은,
 
 $$
-
 P(y^{(k)}|x^{(k)};\theta) = P(y^{(k)}|z) = softmax(z)_i
-
-
 $$
 
-와 같이 확률 부분을 "$k$ 번째 데이터의 정확한 클래스는 $i$" 라고 정한 것이다.
+와 같이 확률 부분을 " $k$ 번째 데이터의 정확한 클래스는 $i$ " 라고 정한 것이다.
 
 이에 더해서 데이터의 log-likehood를 구하기 위해 log softmax를 구하면
 분모, 분자가 갈라지면서
