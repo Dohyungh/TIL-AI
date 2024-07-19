@@ -1055,7 +1055,7 @@ $$
 log-likelihood를 구할 때 우리는 다음 식을 사용한다.
 
 $$
-\argmax_{\theta}\sum_{k=1}^{m}log(P(y^{(k)}|x^{(k)};\theta))
+argmax_{\theta}\sum_{k=1}^{m}log(P(y^{(k)}|x^{(k)};\theta))
 $$
 
 이때 softmax 함수를 사용한다는 것은,
