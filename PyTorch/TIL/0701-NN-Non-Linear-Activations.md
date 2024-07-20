@@ -830,7 +830,7 @@ Kaggle NDSB 대회에서 처음 사용되었으며, 해당 대회 우승자는 $
 ### definition
 
 $$
-Softplus(x) = \frac{1}{\beta}*log(1+exp(\beta*x))
+Softplus(x) = \frac{1}{\beta}*\log{1+exp(\beta*x)}
 $$
 
 <p align="center">
