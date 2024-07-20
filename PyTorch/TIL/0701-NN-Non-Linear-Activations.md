@@ -52,10 +52,10 @@
 
 ## Non-linear Activations (other)
 
-- `nn.Softmin` : Applies the Softmin function to an n-dimensional input Tensor.
-- `nn.Softmax` : Applies the Softmax function to an n-dimensional input Tensor.
-- `nn.Softmax2d` : Applies SoftMax over features to each spatial location.
-- `nn.LogSoftmax` : Applies the log(Softmax(𝑥)) function to an n-dimensional input Tensor.
+- `nn.Softmin` : Applies the Softmin function to an n-dimensional input Tensor.\*
+- `nn.Softmax` : Applies the Softmax function to an n-dimensional input Tensor.\*
+- `nn.Softmax2d` : Applies SoftMax over features to each spatial location.\*
+- `nn.LogSoftmax` : Applies the log(Softmax(𝑥)) function to an n-dimensional input Tensor.\*
 - `nn.AdaptiveLogSoftmaxWithLoss` : Efficient softmax approximation.
 
 [Survey of Activation Functions](https://neverabandon.tistory.com/8)
@@ -1089,3 +1089,81 @@ $$
 를 만들어주어 계속 학습이 이어질 수 있도록 해준다.
 
 이 내용은 MIT에서 2016년 출판한 [Deep Learning](https://www.deeplearningbook.org/) 에서 기반했다고 한다.
+
+## Softmax2d
+
+### definition
+
+공간의 같은 점에 대해서 softmax를 수행한다.
+
+이해가 잘 안 갈 수 있는데, 예를 들어,
+Image 의 경우 (Channel, Height, Width)의 형태로 input이 들어오면, 같은 좌표 (Height, Width) 에서 각 Channel의 데이터를 모아 Softmax를 계산한다.
+
+즉, R, G, B 값을 확률로 나타낸다고 생각하면 된다.
+
+<p align="center">
+<img src="./assets/0720softmax2d.png" style="width:40%" />
+</p>
+
+## LogSoftmax
+
+### definition
+
+$$
+LogSoftmax(x_i) = \log{\frac{exp(x_i)}{\sum_j exp(x_j)}}
+$$
+
+$$
+= x_i - log{\sum_j{exp(x_j)}}
+$$
+
+### 왜 $log$를 씌우는가?
+
+1. 산술적 이점
+
+굳이 exp와 나눗셈 계산을 하는 것보다, log를 씌워 한 꺼풀 벗겨내면 computational 안정성을 얻을 수 있다.
+
+2. vanishing gradient
+
+[The Softmax function and its derivative](https://eli.thegreenplace.net/2016/the-softmax-function-and-its-derivative/)
+
+softmax의 특징상 가장 큰 값에게 꽤나 많은 가중치를 준다. 때문에 그 값 자체가 지나치게 커지면 `float64`의 메모리로 표현할 수 없어 overflow가 생기는데, 이를 방지하기 위해
+
+$$
+D = -max(x_1,x_2, ... ,x_n)
+$$
+
+를 이용해 전처리 과정을 거칠 수 있다. 즉,
+
+$$
+S_j = \frac{e^{x_j+D}}{\sum_{k=1}^{N}e^{x_k+D}}
+$$
+
+로 식을 변형할 수 있다.
+
+이에 따라 값이 모두 **음수로 변하게 되는데** 지수함수의 개형을 생각해보면 음수로 절댓값이 커지면 $\inf$ 가 아닌 0 으로 수렴하기 때문에 overflow를 피할 수 있게 된다.
+
+단, 이때
+
+```
+In [150]: stablesoftmax([1000, 2000, 3000])
+Out[150]: array([ 0.,  0.,  1.])
+```
+
+와 같이 다른 값이 극도로 작아져 해당 노드를 제외하고는 0으로 죽여서 vanishing gradient를 겪게 된다.
+
+[Reinforcement learning](https://en.wikipedia.org/wiki/Softmax_function#Reinforcement_learning) 에서는 $\tau$ 를 사용해 temperature를 조절한다.
+
+$$
+
+P_t(a) = \frac{e^{x_j/\tau}}{\sum_{k=1}^{N}e^{x_k/\tau}}
+$$
+
+좀 더 정확히 요약하자면, 데이터의 분포를 특정 점에서 어느 정도 모아놓아야지, 그렇지 않고 max 값이 극명하게 튀게 되거나, 그 절대적인 값이 지나치게 커지면, softmax 자체가 vanishing gradient를 유발한다. 다음 논문은 Attention에서 해당 범위를 벗어나는 데이터가 거의 매번 존재해서 이론적으로는 문제가 없었지만 기울기 소실 문제를 겪었던 예이다.
+
+[Escaping the Gradient Vanishing: Periodic Alternatives of Softmax in Attention Mechanism](https://ar5iv.labs.arxiv.org/html/2108.07153)
+
+### Cross-entropy & NLL Loss
+
+Cross-entropy 자체가 log-softmax + NLL Loss 이기 때문에,
+Cross-entropy 의 input 이자 본 모델의 아웃풋은 log를 씌우지 않은 일반 softmax 여야 한다는 점에 주의하자.
