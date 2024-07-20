@@ -1155,7 +1155,7 @@ Out[150]: array([ 0.,  0.,  1.])
 [Reinforcement learning](https://en.wikipedia.org/wiki/Softmax_function#Reinforcement_learning) 에서는 $\tau$ 를 사용해 temperature를 조절한다.
 
 $$
-P_t(a) = \frac{e^{x_j / \tau}}{\sum_{k=1}^{N}e^{x_k / \tau}}
+P_t(a) = \frac{e^{x_j / \tau}}{\sum_{k=1}^{N}{e^{x_k / \tau}}}
 $$
 
 좀 더 정확히 요약하자면, 데이터의 분포를 특정 점에서 어느 정도 모아놓아야지, 그렇지 않고 max 값이 극명하게 튀게 되거나, 그 절대적인 값이 지나치게 커지면, softmax 자체가 vanishing gradient를 유발한다. 다음 논문은 Attention에서 해당 범위를 벗어나는 데이터가 거의 매번 존재해서 이론적으로는 문제가 없었지만 기울기 소실 문제를 겪었던 예이다.
