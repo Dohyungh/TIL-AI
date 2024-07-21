@@ -1,4 +1,4 @@
-# Non-linear Activations (weighted sum, nonlinearity)
+# Non-linear Activations (weighted sum, nonlinearity, others)
 
 1. Tensor
 2. Dataset,DataLoader
@@ -24,38 +24,38 @@
 
 ## nn.Non-Linear Activations (weighted sum, nonlinearity)
 
-- `nn.ELU` : Applies the Exponential Linear Unit (ELU) function, element-wise. \*
-- `nn.Hardshrink` : Applies the Hard Shrinkage (Hardshrink) function element-wise. \*
-- `nn.Hardsigmoid` : Applies the Hardsigmoid function element-wise. \*
-- `nn.Hardtanh` : Applies the HardTanh function element-wise. \*
-- `nn.Hardswish` : Applies the Hardswish function, element-wise. \*
-- `nn.LeakyReLU` : Applies the LeakyReLU function element-wise. \*
-- `nn.LogSigmoid` : Applies the Logsigmoid function element-wise. \*
+- `nn.ELU` : Applies the Exponential Linear Unit (ELU) function, element-wise.
+- `nn.Hardshrink` : Applies the Hard Shrinkage (Hardshrink) function element-wise.
+- `nn.Hardsigmoid` : Applies the Hardsigmoid function element-wise.
+- `nn.Hardtanh` : Applies the HardTanh function element-wise.
+- `nn.Hardswish` : Applies the Hardswish function, element-wise.
+- `nn.LeakyReLU` : Applies the LeakyReLU function element-wise.
+- `nn.LogSigmoid` : Applies the Logsigmoid function element-wise.
 - `nn.MultiheadAttention` : Allows the model to jointly attend to information from different representation subspaces.
-- `nn.PReLU` : Applies the element-wise PReLU function. \*
-- `nn.ReLU` : Applies the rectified linear unit function element-wise. \*
-- `nn.ReLU6` : Applies the ReLU6 function element-wise. \*
-- `nn.RReLU` : Applies the randomized leaky rectified linear unit function, element-wise. \*
-- `nn.SELU` : Applies the SELU function element-wise.\*
-- `nn.CELU` : Applies the CELU function element-wise.\*
-- `nn.GELU` : Applies the Gaussian Error Linear Units function. \*
-- `nn.Sigmoid` : Applies the Sigmoid function element-wise.\*
-- `nn.SiLU` : Applies the Sigmoid Linear Unit (SiLU) function, element-wise.\*
-- `nn.Mish` : Applies the Mish function, element-wise.\*
-- `nn.Softplus` : Applies the Softplus function element-wise.\*
-- `nn.Softshrink` : Applies the soft shrinkage function element-wise. \*
-- `nn.Softsign` : Applies the element-wise Softsign function.\*
-- `nn.Tanh` : Applies the Hyperbolic Tangent (Tanh) function element-wise. \*
-- `nn.Tanhshrink` : Applies the element-wise Tanhshrink function. \*
-- `nn.Threshold` : Thresholds each element of the input Tensor.\*
-- `nn.GLU` : Applies the gated linear unit function.\*
+- `nn.PReLU` : Applies the element-wise PReLU function.
+- `nn.ReLU` : Applies the rectified linear unit function element-wise.
+- `nn.ReLU6` : Applies the ReLU6 function element-wise.
+- `nn.RReLU` : Applies the randomized leaky rectified linear unit function, element-wise.
+- `nn.SELU` : Applies the SELU function element-wise.
+- `nn.CELU` : Applies the CELU function element-wise.
+- `nn.GELU` : Applies the Gaussian Error Linear Units function.
+- `nn.Sigmoid` : Applies the Sigmoid function element-wise.
+- `nn.SiLU` : Applies the Sigmoid Linear Unit (SiLU) function, element-wise.
+- `nn.Mish` : Applies the Mish function, element-wise.
+- `nn.Softplus` : Applies the Softplus function element-wise.
+- `nn.Softshrink` : Applies the soft shrinkage function element-wise.
+- `nn.Softsign` : Applies the element-wise Softsign function.
+- `nn.Tanh` : Applies the Hyperbolic Tangent (Tanh) function element-wise.
+- `nn.Tanhshrink` : Applies the element-wise Tanhshrink function.
+- `nn.Threshold` : Thresholds each element of the input Tensor.
+- `nn.GLU` : Applies the gated linear unit function.
 
 ## Non-linear Activations (other)
 
-- `nn.Softmin` : Applies the Softmin function to an n-dimensional input Tensor.\*
-- `nn.Softmax` : Applies the Softmax function to an n-dimensional input Tensor.\*
-- `nn.Softmax2d` : Applies SoftMax over features to each spatial location.\*
-- `nn.LogSoftmax` : Applies the log(Softmax(𝑥)) function to an n-dimensional input Tensor.\*
+- `nn.Softmin` : Applies the Softmin function to an n-dimensional input Tensor.
+- `nn.Softmax` : Applies the Softmax function to an n-dimensional input Tensor.
+- `nn.Softmax2d` : Applies SoftMax over features to each spatial location.
+- `nn.LogSoftmax` : Applies the log(Softmax(𝑥)) function to an n-dimensional input Tensor.
 - `nn.AdaptiveLogSoftmaxWithLoss` : Efficient softmax approximation.
 
 [Survey of Activation Functions](https://neverabandon.tistory.com/8)
@@ -1166,3 +1166,87 @@ $$
 
 Cross-entropy 자체가 log-softmax + NLL Loss 이기 때문에,
 Cross-entropy 의 input 이자 본 모델의 아웃풋은 log를 씌우지 않은 일반 softmax 여야 한다는 점에 주의하자.
+
+## AdaptiveLogSoftmaxWithLoss
+
+[Efficient softmax approximation for GPUs](https://arxiv.org/pdf/1609.04309) 에서 제안
+
+**효율적인 softmax 근사**
+
+자연어 처리 모델에서 거대한 vocab corpus를 GPU 기준으로 효율적으로 처리하기 위해 고안되었다. (단어 풀이 너무 커서 최종 Softmax 계산이 전체 계산의 병목이 되는 경우가 꽤 있었던 것 같다.) 비슷한 연구들을 크게 두가지로 분류했는데,
+
+1. 원본 분포의 parameter 들을 **추정**할 것이냐,
+2. **근사 분포**의 정확한 parameter를 구할 것이냐
+
+본 연구는 후자에 속한다. 정확히는 _hierarchical softmax_ 에서 많은 영감을 받았다고 한다.
+
+관련 연구
+
+- Loss Function approximation
+- Sampling based approximation
+- Self-normalized approaches
+
+선행 지식 (언어 모델)
+
+- feedforward network (Softmax가 어디 쓰이는지 기준으로)
+- RNN
+- hierarchical softmax
+  - 기존에 $O(k)$, ( $k = |\nu|$ , $\nu$ 는 전체 vocab, $k$ 는 전체 vocal size) 의 시간 복잡도를 $O(\sqrt{k})$ 로 줄일 수 있음 (한 Class 에 $\sqrt{k}$ 의 단어들이 있다고 가정)
+  - 조건부 확률을 이용해 다음과 같이 식을 변형함.
+    $$
+    p(w_t|h_t) = p_1(C(w_t)|h_t) \times p_2(w_t|C(w_t), h_t)
+    $$
+
+### Zipf's law
+
+> 어구의 **빈출 순위**와 **빈도** 관계에서 $k$ 순위의 어구는 1위 어구의 $\frac{1}{k}$ 빈도를 가진다는 경험적 법칙
+
+쉽게 말해 대부분 자주 등장했던 단어들 내에서 또 등장한다는 뜻이다. (~~언어학의 20/80 법칙..~~)
+
+이에 따라 언어를 *head*와 _tail_ 클래스로 나누어서 확률은 *head*가, cardinality (유니크한 단어의 수) 는 *tail*이 월등히 높게 단어를 배정한다.
+
+### 클래스의 계층구조
+
+각 클래스를 하나도 겹치지 않게, 즉 클래스를 트리의 리프 노드에서만 고르게 되면 오히려 성능이 떨어졌다. 이를, 확률을 구하는 과정에서 depth 가 깊어질 수록 조건부 확률로 계속해서 확률이 곱해져 작아지기 때문으로 보고, **얕은 2 층짜리 hierarchical softmax 를 선호하게 되었다.** 자주 등장하는 단어는 root에, 자주 등장하지 않는 단어는 leaf 노드 (클래스)에 들어가게 된다.
+
+그런 다음, head 와 tail 에 들어갈 단어의 수를 나눠야 하는데, ( $k_h$ 와 $k_t$ ) 이는 전체 분포의 $p_h$ 와 $p_t$ 를 각각 cover 하게 된다. 이 비율에 따라 computation time의 그래프를 그린 것이 다음과 같다.
+
+<p align="center">
+<img src="./assets/0721AdaptiveSoftmax.png" style="width:60%" />
+</p>
+
+이 그래프에서 얻어야 하는 중요한 관찰 중 하나는, 두 cluster 가 같은 확률을 갖는 것 (빨간 점선) 이 최적의 계산 속도를 보장하지 않는다는 것이다.
+
+### 각 클러스터에 대한 classifier 의 capacity
+
+#### capacity
+
+공식적으로 정의된 단어는 아닌 것으로 보인다. 그 의미를 구체적으로 살펴보자면, 모델의 **"복잡도"** 에 가깝다. 비슷한, 거리가 가깝지만 다른 클래스에 속한 두 단어를 분류해낼 수 있는 능력 이라고 생각하면 어느 정도 이해가 된다.
+
+각 클러스터는 똑같은 capacity를 가질 필요가 없다. 자주 등장하는 단어가 속한 클러스터는 높은 capacity를, 자주 등장하지 않는 단어는 학습할 기회도 많지 않기 때문에 낮은 capacity를 가져도 상관 없다. 이를 본 연구에서 접목시켰다고 한다.
+
+### general case로 확장
+
+<p align="center">
+<img src="./assets/0721AdaptiveSoftmaxGeneralCase.png" style="width:60%" />
+</p>
+
+자주 등장하는 $\nu_h$ 가 자주 등장하지 않는 단어들의 cluster ($\nu_1$ 부터 $\nu_J$ 까지) 벡터를 소유하고 있는 형태이다.
+
+이 이후로는
+
+1. 클러스터의 개수를 특정하고,
+2. 특정된 클러스터의 개수에 각각 몇개씩의 단어를,
+3. 어떻게 넣을지 결정한다.
+
+이에 따라 _3)_ 에서는 최빈 단어를 가장 작은 클러스터에 넣는 등의 결론을 얻게 되며, _2)_ 의 경우 dynamic programming 을 이용하고, _1)_ 의 경우 실험적으로 얻게 되는데 클러스터 개수가 5를 넘는 건 별 의미가 없었기에 2개에서 5개의 클러스터를 사용했다고 한다.
+
+# 후기
+
+지난했던 `torch.nn`의 활성함수 정리가 끝났다. (0701~0721)
+
+`multi-head-attention` 은 transformer 문서에서 더 자세히 공부한 다음 적을 계획이다. (~~언제?~~)
+
+어느 정도 활성함수의 변천사와 활성함수가 가져야할 긍정적인 특징과 문제점들, 그리고 그 문제점을 개선하기 위한 시도들에 대해서 이해해 볼 수 있었다. 그 과정에서 개념들이 복잡하게 얽혀있기도 하고 여기저기 파편적으로 퍼져있었기도 해서 더 어려웠던 것 같다. 중간 중간 대학교에서 배웠던 것들이 나올 때마다(MLE, CrossEntropy, vanishing gradient, Convolution) 미리. 제대로. 공부해놓지 않은 자신이 한탄스럽기도 했다.
+
+이제 순서대로라면 `normalization layer`를 작성해야 겠지만,, SSAFY 특화 프로젝트를 위해 MLOps로 살짝 눈을 돌려서 여러 미들웨어와 데이터 적재, 처리, 가공, 학습 과정을 공부해보려고 한다. LLM 을 소재로 한 프로젝트를 계획하고 있는데, 컴퓨터의 사양과 현재 나의 지식 수준으로 가능한 스케일이 어느 정도인지 가늠이 되지 않아서 걱정이다.
