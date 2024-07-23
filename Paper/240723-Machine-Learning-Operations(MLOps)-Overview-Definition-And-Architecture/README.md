@@ -79,7 +79,7 @@ DevOps Tool 들은 크게 다음의 6종류로 구분된다.
 ### 방법론
 
 <p style="text-align: center">
-<img src="./assets/OverviewOfTheMethodology.png" style="width: 40%">
+<img src="./assets/OverviewOfTheMethodology.png" style="width: 40%"/>
 </p>
 
 학술계의 인사이트, 실무진의 전문성을 모두 놓치지 않기 위해 문헌, Tool, Interview의 3가지 방법론을 모두 사용해 MLOps의 개념을 정립하고, 이후 결과 파트에서 그 내용에 대해 설명한다.
@@ -112,8 +112,8 @@ DevOps Tool 들은 크게 다음의 6종류로 구분된다.
 
 <p style="text-align: center">
 <img src="./assets/ToolReview1.png
-" style="width: 60%">
-<img src="./assets/ToolReview2.png" style="width: 40%">
+" style="width: 60%"/>
+<img src="./assets/ToolReview2.png" style="width: 40%"/>
 </p>
 
 #### Interview Study
@@ -127,7 +127,7 @@ LinkedIn을 통해서 여러 다른 기업, 배경, 성별의 MLOps 전문가들
 
 <p style="text-align: center">
 <img src="./assets/IntervieweeList.png
-" style="width: 40%">
+" style="width: 40%"/>
 </p>
 
 > 인터뷰이들 목록인데, 궁금하다..!
