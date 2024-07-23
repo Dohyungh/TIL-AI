@@ -111,8 +111,7 @@ DevOps Tool 들은 크게 다음의 6종류로 구분된다.
 리뷰한 tool들은 다음과 같다.
 
 <p style="text-align: center">
-<img src="./assets/ToolReview1.png
-" style="width: 60%"/>
+<img src="./assets/ToolReview1.png" style="width: 40%"/>
 <img src="./assets/ToolReview2.png" style="width: 40%"/>
 </p>
 
@@ -126,8 +125,7 @@ LinkedIn을 통해서 여러 다른 기업, 배경, 성별의 MLOps 전문가들
 이때 더 이상 새로운 범주나 개념이 등장하지 않을 때까지 진행되었다.
 
 <p style="text-align: center">
-<img src="./assets/IntervieweeList.png
-" style="width: 40%"/>
+<img src="./assets/IntervieweeList.png" style="width: 40%"/>
 </p>
 
 > 인터뷰이들 목록인데, 궁금하다..!
