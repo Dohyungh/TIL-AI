@@ -74,4 +74,60 @@ DevOps Tool 들은 크게 다음의 6종류로 구분된다.
 6. 모니터링, 로깅
    - (Prometheus, Logstash)
 
-이런 DevOps 방식이 많은 성공을 거뒀고, 이제 ML 에도 적용되려 한다.
+이런 DevOps 방식이 많은 성공을 거뒀고, 이제 ML 에도 적용하려 한다.
+
+### 방법론
+
+<p style="text-align: center">
+<img src="./assets/OverviewOfTheMethodology.png" style="width: 40%">
+</p>
+
+학술계의 인사이트, 실무진의 전문성을 모두 놓치지 않기 위해 문헌, Tool, Interview의 3가지 방법론을 모두 사용해 MLOps의 개념을 정립하고, 이후 결과 파트에서 그 내용에 대해 설명한다.
+
+#### Literature Review
+
+- Webster and Watson 의 논문 리뷰 방법론을 참고해 수행됨.
+- Barbara Kitchenham의 [Systematic literature reviews in software engineering – A systematic literature review](https://www.sciencedirect.com/science/article/abs/pii/S0950584908001390?via%3Dihub) 도 참고함.
+
+몇번의 검색 끝에 다음과 같이 검색어를 정의했다.
+
+- DevOps
+- CICD
+- Continuous Integration
+- Continuous Delivery
+- Continuous Deployment
+- Machine Learning
+- MLOps
+- CD4ML
+
+구글 스칼라를 비롯한 여러 사이트들을 검색했는데, 사실 DevOps를 ML에 적용하는 것은 학술계에는 아직 생소한 일이다. 그래서 본 연구가 진행될 때에는 리뷰된 연구들이 몇개 되지 않았다.
+
+그래서 non-peer-reviewed 연구들까지 모두 검색했고, 1864개의 논문을 얻었다. 특정 기준을 갖고 27개의 논문을 추려낸 결과, 그들은 모두 peer-reviewed 논문들이었다.
+
+#### Tool Review
+
+27개의 논문과 8개의 인터뷰를 거치고 난 후, 다양한 Open Source tools, 프레임워크, 상업적 ML 클라우드 서비스들을 리뷰했다. 어떤 기술적 구성요소들이 있는지 이해하기 위한 작업이었다.
+
+리뷰한 tool들은 다음과 같다.
+
+<p style="text-align: center">
+<img src="./assets/ToolReview1.png
+" style="width: 60%">
+<img src="./assets/ToolReview2.png" style="width: 40%">
+</p>
+
+#### Interview Study
+
+- Myers and Newman 방식을 참고함 [The qualitative interview in IS research: Examining the craft](https://www.sciencedirect.com/science/article/abs/pii/S1471772706000352?via%3Dihub)
+
+- 몇명을 인터뷰할 것인지도 결정해야 해서 이론적인 표본 접근방식을 적용했다. [The discovery of grounded theory: strategies for qualitative research]
+
+LinkedIn을 통해서 여러 다른 기업, 배경, 성별의 MLOps 전문가들 8명을 찾아 스크립트를 작성한 후 인터뷰를 진행했다.
+이때 더 이상 새로운 범주나 개념이 등장하지 않을 때까지 진행되었다.
+
+<p style="text-align: center">
+<img src="./assets/IntervieweeList.png
+" style="width: 40%">
+</p>
+
+> 인터뷰이들 목록인데, 궁금하다..!
