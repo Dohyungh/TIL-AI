@@ -47,7 +47,7 @@ MLOps에는 여러 측면이 있는데, 최선의 실무(실천)들, 개념 집�
 
 DevOps는 단순한 방법론을 넘어 사회 / 기술적 문제들을 다루는 패러다임을 의미한다.
 
-개발과 운영사이의 gap을 없애고 협업, 소통, 지식의 공유를 강조한다. 자동화와 지속통합/배포로 빠르고, 잦지만 신뢰도 높은 배포를 보장하는데 더해 지속 테스팅, 품질 관리, 지속적 모니터링, 로깅(로그를 남기는 것), 피드백 순환이 이루어진다.
+개발과 운영사이의 gap을 없애고 협업, 소통, 지식의 공유를 강조한다. 자동화와 지속통합/배포로 빠르고, 잦지만 신뢰도 높은 배포를 보장하는데 더해 지속 테스팅, 품질 관리, 지속적 모니터링, 로깅(로그를 남기는 것), 피드백 루프이 이루어진다.
 
 DevOps Tool 들은 크게 다음의 6종류로 구분된다.
 
@@ -129,3 +129,86 @@ LinkedIn을 통해서 여러 다른 기업, 배경, 성별의 MLOps 전문가들
 </p>
 
 > 인터뷰이들 목록인데, 궁금하다..!
+
+## 결과
+
+위의 방법론들을 사용해 중요 원리, 구성요소로의 객체화, 필수 역할등의 결과를 얻었고, MLOps의 개념과 정의를 이끌어냈다.
+
+### Principles
+
+보편적인 사실이나 가치, 가이드를 제공한다는 의미의 priniciple은 MLOps의 "최선의 방법"과 밀접하게 연관되어 있다. 9개의 원칙(Principle)을 얻을 수 있었다.
+
+<p align="center">
+<img src="./assets/Principles.png" style="width: 60%"/>
+</p>
+
+#### `CI/CD automation` - P1
+
+- 지속적 통합
+- 지속적 전달 (실제 product에 반영되기 위해 버튼 하나만 누르면 되는 순간까지)
+- 지속적 배포 (실제 product에 자동으로 반영)
+
+빌드, 테스트, delivery, 배포를 수행한다. 개발자에게 특정 단계의 진행이 성공인지 실패인지를 빠르게 알려줘서 전반적인 생산성이 개선된다.
+
+#### `Workflow Orchestration` - P2
+
+유향 비순환 그래프 (DAGs)로 ML workflow 파이프라인을 조직한다. 관계와 의존성을 고려해 일의 **순서**를 정한다.
+
+#### `Reproducibility` - P3
+
+ML을 실행해서 정확히 똑같은 결과를 얻는 능력을 말한다.
+
+#### `Versioning` - P4
+
+모델의 버전 뿐만 아니라, 데이터, 코드의 버전까지 단순히 재생산(Reproducibility)을 보장하는 것을 넘어 흐름을 짚을 수 있게 한다.(traceabiltiy)
+
+#### `Collaboration` - P5
+
+데이터, 모델, 코드에 대해 협업이 가능하게 한다. 기술적인 면만 말하는 것이 아니다. 협업과 소통을 통해 서로 다른 일을 하는 사람들 간의 거리를 좁혀 준다.
+
+#### `Continuous ML training & evaluation` - P6
+
+지속적 ML 학습이란, 주기적으로 새로운 feature 데이터에 대해 재학습시키는 것을 말한다. 이것은 `Monitoring` 컴포넌트, 피드백 루프, 자동 ML workflow 파이프라인의 지원들이 있어야 한다.  
+이때 모델의 바뀐 성능을 평가하기 위해 항상 evaluation이 포함된다.
+
+#### `ML metadata tracking/logging` - P7
+
+metadata는 각각의 ML workflow에 대해 트랙킹되고, 로깅된다. 매 학습이 이루어질 때마다 어떤 코드, 어떤 데이터, 어떤 결과, 어떤 파라미터를 썼는지 완벽히 기록되어야 한다.
+
+#### `Continuous monitoring` - P8
+
+주기적으로 데이터, 모델, 코드를 평가하는 것을 의미한다. 잠재적인 에러와 변경사항들이 있는지 관찰한다.
+
+#### `Feedback Loops` - P9
+
+여러 개의 피드백 루프가 필요하다. 예를 들어, 모델의 실험에서 이전의 feature 엔지니어링 단계로의 루프나 `Monitoring` component에서 재학습을 위해 스케줄러로의 루프가 있겠다.
+
+### Technical Components
+
+Principle을 알아낸 후, 정확한 component들과 구현에 대해 설명하겠다. 각각의 component들에 대해 필수적인 **기능**을 열거한다. 괄호안에는 각각의 기능 component가 어느 Principle component를 구현할 수 있는지를 적었다.
+
+#### `CI/CD Component` - C1 [P1, P6, P9]
+
+- Jenkins
+- GitHub actions
+
+#### `Source Code Repository` - C2 [P4, P5]
+
+코드 저장과 버전관리 가능
+
+- Bitbucket
+- GitLab
+- GitHub
+- Gitea
+
+#### `Workflow Orchestration Component` - C3 [P2, P3, P6]
+
+- Apache Airflow
+- Kubeflow Pipelines
+- Luigi
+- AWS SageMaker Pipelines
+- Azure Pipelines
+
+#### `Feature Store System` - C4 [P3, P4]
+
+자주 쓰는 것들을 모아 놓을 수 있는 중앙 저장소이다.
