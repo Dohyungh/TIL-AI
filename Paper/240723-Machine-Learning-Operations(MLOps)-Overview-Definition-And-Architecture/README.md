@@ -79,7 +79,7 @@ DevOps Tool 들은 크게 다음의 6종류로 구분된다.
 ### 방법론
 
 <p align="center">
-<img src="./assets/OverviewOfTheMethodology.png" style="width: 40%"/>
+<img src="./assets/OverviewOfTheMethodology.png" style="width: 60%"/>
 </p>
 
 학술계의 인사이트, 실무진의 전문성을 모두 놓치지 않기 위해 문헌, Tool, Interview의 3가지 방법론을 모두 사용해 MLOps의 개념을 정립하고, 이후 결과 파트에서 그 내용에 대해 설명한다.
@@ -125,7 +125,7 @@ LinkedIn을 통해서 여러 다른 기업, 배경, 성별의 MLOps 전문가들
 이때 더 이상 새로운 범주나 개념이 등장하지 않을 때까지 진행되었다.
 
 <p align="center">
-<img src="./assets/IntervieweeList.png" style="width: 40%"/>
+<img src="./assets/IntervieweeList.png" style="width: 60%"/>
 </p>
 
 > 인터뷰이들 목록인데, 궁금하다..!
@@ -212,3 +212,122 @@ Principle을 알아낸 후, 정확한 component들과 구현에 대해 설명하
 #### `Feature Store System` - C4 [P3, P4]
 
 자주 쓰는 것들을 모아 놓을 수 있는 중앙 저장소이다.
+두 데이터베이스가 확인됐다. : 하나는, 오프라인 feature 저장소로 실험을 위해 평범한 latency로 feature를 제공한다. 다른 하나는, 온라인에서 낮은 latency로 feature를 제공해서 실제 상품단계에서 예측을 하기 위한 저장소이다.
+
+- Google Feast
+- Amazon AWS Feature Store
+- Tecton.ai
+- Hopswork.ai
+
+대부분의 ML 모델 학습을 위한 데이터는 여기서 오지만, 데이터는 어디서나 올 수 있는 것이기도 하다.
+
+#### `Model Training Infrastructure` - C5 [P6, ]
+
+계산 자원을 제공한다. (CPUs, RAM, GPUs) 분산 시스템일 수도 있고, 비분산 시스템일수도 있다. 보편적으로는, 확장 가능한 분산 시스템을 추천한다. 로컬 머신을 쓸 수도, 클라우드를 쓸 수도 있다.
+
+- Kubernetes
+- Red Hat OpenShift
+
+#### `Model Registry` - C6 [P3, P4]
+
+훈련된 ML 모델과 그 메타데이터를 중앙에 저장한다.
+
+- MLflow
+- AWS SageMaker Model Registry
+- Microsoft Azure ML Model Registry
+- Neptune.ai
+
+간단한 저장소로는,
+
+- Microsoft Azure Storage
+- Google Cloud Storage
+- Amazon AWS S3
+
+가 있다.
+
+#### `ML Metadata Stores` - C7 [P4, P7]
+
+각각의 ML workflow 파이프라인 작업을 위한 다양한 종류의 메타데이터를 저장한다. 각 학습 작업 (학습 날짜, 시간, 학습에 걸린 시간 등)에 대한 데이터, 모델 특정 데이터 (파라미터, 결과 메트릭, 모델 lineage : 사용된 데이터와 코드) 등을 저장하는 저장소도 있을 수 있다. orchestrator 와 메타데이터 저장소를 동시에 제공하는 것들을 예시로 들 수 있겠다.
+
+- Kubeflow Pipelines
+- AWS SageMaker Pipelines
+- Azure ML
+- IBM Watson Studio
+- MLflow : advanced 메타데이터 저장소와 모델 registry를 제공
+
+#### `Model Serving Component` - C8 [P1, ]
+
+여러가지로 정의할 수 있겠다. 예를 들자면, 매우 큰 사이즈의 input을 실시간 혹은 배치 형태로 모델에 제공하고, 결과를 받는 온라인 inference를 들 수 있겠고, 이는 REST API 형태일 수 있다. 기반 시설 계층으로서, 확장 가능하고 분산된 모델 제공 infra가 추천된다.
+
+- Kubernetes 와 Docker의 ML 모델 컨테이너화 기술
+- Python 웹 어플리케이션 Flask 와 API
+- Kserving of Kubeflow
+- TensorFlow Serving
+- Seldion.io serving
+
+이외에도,
+
+- Apache Spark for batch predictions
+
+클라우드 서비스로는,
+
+- Microsoft Azure ML REST API
+- AWS SageMaker Endpoints
+- IBM Watson Studio
+- Google Vertex AI prediction service
+
+가 있을 수 잇겠다.
+
+#### `Monitoring Component` - C9 [P8, P9]
+
+모델 성능에 대한 지속적인 모니터링 을 다룬다. 추가적으로 ML 인프라, CI/CD, Orchestration 에 대한 모니터링도 있을 수 있다.
+
+- Prometheus with Grafana
+- ELK stack (Elasticsearch, Logstash, Kibana)
+- TensorBoard
+
+모니터링 컴포넌트가 내장된 툴로는,
+
+- Kubeflow
+- MLflow
+- AWS SageMaker 모델 모니터 혹은 클라우드 watch
+
+### Roles
+
+MLOps는 여러 그룹들이 서로 겹쳐있는 프로세스이기 때문에, 서로 다른 역할(Role)들의 상호작용도 production 단계에서 ML 시스템을 디자인, 관리, 자동화, 운영하는 데에 중요해진다.
+
+필수적인 역할들에 대해 그 목적과 관련된 작업들을 간략히 소개한다.
+
+#### `Business Stakeholder` - R1
+
+Product Owner, Project Manager 와 유사하다. 사업의 커뮤니케이션 영역과 ML로 이루고자 하는 비즈니스 목표를 정의한다. 예를 들어, ROI (Return On Investment) 를 계산하는 것을 들 수 있다.
+
+#### `Solution Architect` - R2
+
+IT Architect 와 유사하다. 평가에 기반해서 아키텍처를 디자인하고 기술을 정의한다.
+
+#### `Data Scientist` - R3
+
+ML specialist, ML Developer 와 유사하다.
+비즈니스적 문제를 ML 문제로 보고, 모델 엔지니어링, 알고리즘과 하이퍼 파라미터 선택등을 다룬다.
+
+#### `Data Engineer` - R4
+
+DataOps 엔지니어 와 유사하다.
+데이터를 빌드업하고, feature 엔지니어링 파이프라인을 관리한다. feature store system의 데이터베이스들에 적절한 data를 주입해야한다.
+
+#### `Software Engineer` - R5
+
+소프트웨어 디자인 패턴과, 널리 알려져있는 코딩 가이드라인을 적용해 ML 문제가 잘 만든 product가 될 수 있도록 돕는다.
+
+#### `DevOps Engineer` - R6
+
+개발, 운영, 적절한 CI/CD 자동화, ML workflow orchestration, 모델 배포와 모니터링 사이의 갭을 연결한다.
+
+#### `ML Engineer / MLOps Engineer` - R7
+
+이 모두를 연결하는 역할을 하기 때문에, cross-domain 지식이 필수적이다. 각종 기술들을 통합시키고, ML 인프라를 만들고 운영한다. ML workflow를 자동화하고, 모델을 배포한다. 모델과 ML 인프라를 동시에 모니터링 한다.
+
+<p align="center">
+<img src="./assets/RoleDiagram.png" style="width: 60%"/>
+</p>
