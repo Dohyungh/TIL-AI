@@ -331,3 +331,56 @@ DataOps 엔지니어 와 유사하다.
 <p align="center">
 <img src="./assets/RoleDiagram.png" style="width: 60%"/>
 </p>
+
+## Architecture and Workflow
+
+MLOps의 시작: 프로젝트 초기화 에서부터 끝: 모델 serving 까지 연구자들, 실무진들이 가장 적절한 기술들과 프레임워크들을 고를 수 있게 디자인 된 아키텍쳐를 제시한다.
+
+1. MLOps 프로젝트의 시작
+2. feature 저장소로의 데이터 주입을 포함한 feature 엔지니어링 파이프라인
+3. 실험
+4. 모델 serving까지의 자동화된 ML workflow 파이프라인
+
+<p align="center">
+<img src="./assets/MLOpsWorkflow.png" style="width: 100%"/>
+</p>
+
+### MLOps 프로젝트의 시작 - A
+
+1. 비즈니스 이해관계자들(R1)이 사업을 분석하고 ML로 해결할 수 있는 잠재 문제를 확인한다.
+
+2. Solution 아키텍트(R2)가 전반적인 ML 시스템을 디자인하고 전반적인 평가 과정에서 사용할 기술들을 결정한다.
+
+3. 데이터 싸이언티스트(R3)가 비즈니스 목표로부터 어떤 ML 문제를 풀지 정한다. (분류, 회귀 등)
+
+4. 데이터 엔지니어(R4)와 데이터 싸이언티스트(R3)가 문제를 위해 어떤 데이터가 필요한지 정한다.
+
+5. 데이터 엔지니어(R4)와 데이터 싸이언티스트(R3)가 raw 데이터 소스를 찾는다. 데이터의 분포와 질을 확인하고 검증한다.
+
+만약에 지도학습을 사용한다면, 데이터의 라벨링 여부를 확인한다. 즉, 목표한 특성이 밝혀져 있다는 뜻이다.
+
+### Feature Engineering pipeline의 Requirements
+
+Feature는 모델 학습에 필요한 attribute을 말한다.
+
+원시 데이터에 대한 초반 이해와 분석이 끝나면, feature engineering pipeline의 기본 필요 요소들이 다음과 같이 정의된다.
+
+6. 데이터 엔지니어(R4)가 데이터 transformation 규칙을 정의한다. (정규화와 통합) 데이터를 정제하는 과정까지 포함된다.
+
+7. 데이터 엔지니어(R4)와 데이터 싸이언티스트(R3)가 feature engineering rule을 정의한다. 다른 feature들을 기반으로 새롭고 더 진화된 feature를 얻는다. 이 rule들은 계속해서 데이터 싸이언티스트(R3)에 의해 조정된다. 실험의 결과 피드백을 바탕으로, 혹은 모니터링 컴포넌트의 모델 성능 검사를 바탕으로 한다.
+
+### Feature Engineering pipeline
+
+데이터 엔지니어(R4)와 소프트웨어 엔지니어(R5) 가 위의 requirements를 feature engineering pipeline의 시작점으로 삼는다.
+
+근본적인 요구사항인 CI/CD(C1) 와 Orchestration component(C3)이 데이터 엔지니어 (R4)에 의해 정의된다. 인프라 자원역시 정의된다.
+
+8. 먼저 feature engineering pipeline이 원시 데이터에 연결된다. 원시 데이터는 streaming 데이터, 정적 배치형 데이터, 혹은 어떤 클라우드 저장소로부터의 데이터도 될 수 있다.
+
+9. 데이터들이 데이터 소스에서 추출된다.
+
+10. 데이터 전처리 과정이 시작된다. 데이터 변형 rule (앞에서 정의했던) artifact가 이 작업의 input으로 전달된다. 이 과정의 목적은 결국 데이터를 사용가능한 형태로 만드는 것이다. 역시 피드백을 받으면서 지속적으로 개선된다.
+
+11. feature enginnering 작업은 새롭고 더 진보된 feature 들을 다른 feature에 기반해 만들어간다. 역시 지속적으로 개선된다.
+
+12. 마지막으로, feature store system (C4)에 배치 혹은 streaming 데이터의 형태로 데이터가 주입된다. 온라인 혹은 오프라인 형태의 데이터 저장소 모두 가능하다.
