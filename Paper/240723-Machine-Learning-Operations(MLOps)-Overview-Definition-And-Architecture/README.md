@@ -351,11 +351,11 @@ MLOps의 시작: 프로젝트 초기화 에서부터 끝: 모델 serving 까지 
 
 2. Solution 아키텍트(R2)가 전반적인 ML 시스템을 디자인하고 전반적인 평가 과정에서 사용할 기술들을 결정한다.
 
-3. 데이터 싸이언티스트(R3)가 비즈니스 목표로부터 어떤 ML 문제를 풀지 정한다. (분류, 회귀 등)
+3. 데이터 사이언티스트(R3)가 비즈니스 목표로부터 어떤 ML 문제를 풀지 정한다. (분류, 회귀 등)
 
-4. 데이터 엔지니어(R4)와 데이터 싸이언티스트(R3)가 문제를 위해 어떤 데이터가 필요한지 정한다.
+4. 데이터 엔지니어(R4)와 데이터 사이언티스트(R3)가 문제를 위해 어떤 데이터가 필요한지 정한다.
 
-5. 데이터 엔지니어(R4)와 데이터 싸이언티스트(R3)가 raw 데이터 소스를 찾는다. 데이터의 분포와 질을 확인하고 검증한다.
+5. 데이터 엔지니어(R4)와 데이터 사이언티스트(R3)가 raw 데이터 소스를 찾는다. 데이터의 분포와 질을 확인하고 검증한다.
 
 만약에 지도학습을 사용한다면, 데이터의 라벨링 여부를 확인한다. 즉, 목표한 특성이 밝혀져 있다는 뜻이다.
 
@@ -367,7 +367,7 @@ Feature는 모델 학습에 필요한 attribute을 말한다.
 
 6. 데이터 엔지니어(R4)가 데이터 transformation 규칙을 정의한다. (정규화와 통합) 데이터를 정제하는 과정까지 포함된다.
 
-7. 데이터 엔지니어(R4)와 데이터 싸이언티스트(R3)가 feature engineering rule을 정의한다. 다른 feature들을 기반으로 새롭고 더 진화된 feature를 얻는다. 이 rule들은 계속해서 데이터 싸이언티스트(R3)에 의해 조정된다. 실험의 결과 피드백을 바탕으로, 혹은 모니터링 컴포넌트의 모델 성능 검사를 바탕으로 한다.
+7. 데이터 엔지니어(R4)와 데이터 사이언티스트(R3)가 feature engineering rule을 정의한다. 다른 feature들을 기반으로 새롭고 더 진화된 feature를 얻는다. 이 rule들은 계속해서 데이터 사이언티스트(R3)에 의해 조정된다. 실험의 결과 피드백을 바탕으로, 혹은 모니터링 컴포넌트의 모델 성능 검사를 바탕으로 한다.
 
 ### Feature Engineering pipeline
 
@@ -384,3 +384,101 @@ Feature는 모델 학습에 필요한 attribute을 말한다.
 11. feature enginnering 작업은 새롭고 더 진보된 feature 들을 다른 feature에 기반해 만들어간다. 역시 지속적으로 개선된다.
 
 12. 마지막으로, feature store system (C4)에 배치 혹은 streaming 데이터의 형태로 데이터가 주입된다. 온라인 혹은 오프라인 형태의 데이터 저장소 모두 가능하다.
+
+### Experimentation
+
+experimentation 단계의 대부분은 데이터 사이언티스트(R3)에 의해 주도된다. Software Engineer(R5)가 이를 도울 수 있다.
+
+13. 데이터 분석을 위해 데이터 사이언티스트(R3)가 feature 저장소에 연결한다. (원시 데이터에 직접 접근할 수도 있다.) 데이터에 수정이 필요할 경우 데이터 엔지니어링 단계로 feedback을 줄 수 있다.
+
+14. feature 저장소에서 온 데이터에 대한 준비와 검증이 필요하다. 여기서 train / test set split이 이루어진다.
+
+15. 데이터 사이언티스트(R3)가 가장 적합한 알고리즘과 하이퍼 파라미터들을 추정한다. 소프트웨어 엔지니어가 모델 훈련용 코드를 작성하는 것을 도와 가면서 모델 학습을 진행한다.
+
+16. 모델 훈련 과정 중에 파라미터들을 시험하고, 검증한다. 좋은 성적 지표가 나오면 학습을 멈추고 파라미터를 튜닝한다. 모델을 학습시키는 것과 모델을 검증하는 과정이 맞물려 반복되는데, 이를 **model engineering**이라고 부른다. 이 과정을 통해 가장 좋은 알고리즘과 하이퍼 파라미터들이 결정된다.
+
+17. 데이터 사이언티스트가 모델을 export 하고, 코드 저장소에 커밋한다.
+
+데브옵스 엔지니어 (R6) 혹은 ML 엔지니어 (R7) 가 자동화 ML workflow 파이프라인을 정의해 저장소에 커밋한다. 데이터 사이언티스트 (R3)가 새로운 ML 모델을 올리거나, 앞에서 말한 두 엔지니어가 ML workflow 파이프라인을 올리면, CI/CD 컴포넌트 (C1) 가 업데이트된 코드를 찾아 자동적으로 빌드, 테스트, delivery 작업을 수행한다.
+
+### Automated ML workflow pipeline
+
+DevOps Engineer (R6) 와 ML Engineer (R7) 가 자동화된 ML workflow 파이프라인을 운영한다고했다. 그들은 또한, 모델 학습을 위한 인프라도 관리하는데, Kubernetes 같이 계산을 지원하는 프레임워크나 하드웨어 자원등을 가리킨다. Workflow orchestration 컴포넌트 (C3) 가 계속 언급하는 자동화된 ML workflow 파이프라인을 지휘한다고 했는데, 각 작업마다 필요한 artifact들 (예를 들어, 이미지)을 artifact store 에서 가져온다. (예를 들어, 이미지 레지스트리) 각 작업들은 독립된 환경 (예를 들어, 컨테이너) 에서 수행되며, 결국 workflow orchestration 컴포넌트는 각 작업에 대한 메타데이터를 로그, 수행 시간 등의 형태로 수집한다.
+
+자동화된 ML workflow 파이프라인이 한 번 작동하면, 다음의 작업들은 자동적으로 수행된다.
+
+18. 버전으로 구분되는 feature 들을 feature 저장소에서 가져온다. 오프라인 저장소든, 온라인 저장소든 상관없다.
+
+19. 자동화 데이터 준비, 검증과 더불어 train / test split 이 이루어진다.
+
+20. 처음 보는 데이터에 대해 모델이 학습한다. 하이퍼 파라미터와 메타데이터는 이미 이전 실험 단게에서 정해져 있고, 모델은 재학습할 뿐이다.
+
+21. 모델에 대한 조정이 지속적으로 이루어진다. 좋은 결과가 나올 때까지 반복한다.
+
+22. 학습된 모델이 export 되고,
+
+23. model registry (C6)에 등록된다.
+
+모든 학습 iteration에서, ML metadata store(C7) 은 모델 학습의 파라미터, 성능 metric을 저장한다. 이외에도, training job ID를 트랙킹, 로깅하고 학습 날짜와 시간, 걸린 시간, artifacts의 소스를 포함한다. 추가로 모델 특정된 메타데이터인 "model lineage"는 매번 새로 학습된 모델의 data와 code의 lineage 또한 트랙킹 된다. 여기에는 어떤 코드로 모델을 학습시켰는지, feature data는 어느 버전에 어느 소스에 있던 것을 썼는지, 모델은 어느 단계 (staging, production ready)에 있었는지 등이 포함된다.
+
+좋은 성능의 모델이 staging에서 production 단계로 넘어가면 DevOps Engineer 와 MLOps Engineer는 모델과 serving 코드를 넘겨받는다.
+
+24. CI/CD 컴포넌트 (C1)은 지속적 배포 파이프라인을 가동한다. 지속적 배포 파이프라인은 모델과 serving 코드를 빌드, 테스트하고 production serving 단계로 모델을 위치시킨다.
+
+25. model serving component(C5)는 feature store system 에서 새로운 데이터에 대해 모델의 출력을 얻어본다. 실시간 반응 테스트를 위해서는 low latency에 온라인 데이터베이스를, 큰 input을 위한 batch prediction을 위해서는 오프라인 데이터 베이스에서 normal latency로 데이터를 받아온다.
+
+모델 serving 어플리케이션, prediction 리퀘스트는 REST API를 주로 사용한다.
+
+26. monitoring component(C6)는 특정 threshold 값을 infra 혹은 model (혹은 모델의 퍼포먼스)이 넘는지를 실시간으로 감시하고, 넘었다면 피드백 루프를 통해 데이터를 보낸다.
+
+27. 피드백 루프는 monitoring component(C6)에 연결되어 빠르고 즉각적인 피드백을 가능하게 한다. 이 피드백 루프를 통해 upstream에 있는 experimental stage, data engineering, 스케줄러(trigger)이 조정될 수 있다. 특히 experimental stage로의 피드백이 데이터 사이언티스트가 모델을 개선시키는데 도움을 준다.
+
+28. ML 모델의 성능이 시간이 지나며 하락하는 drift 현상 (Concept drift 혹은 Data drift)을 피드백 메커니즘에 의해 지속적 학습이 이루어지면서 대응할 수 있다. 현재 배포된 모델이 적절한지, 혹은 부적절해졌는지 판단하는 것은 데이터의 분포 (distribution)을 계산해봄으로써 알 수 있다. 물론 통계량의 변화 이외에도 새로운 feature data가 등장했을 때도 재학습이 이루어질 수 있다.
+
+## Conceptualization
+
+MLOps 가 머신러닝, 소프트웨어 엔지니어링, DevOps, 데이터 엔지니어링의 교차점에 있다는 것은 의심의 여지가 없다.  
+다음과 같이 MLOps를 정의한다.
+
+[원문]
+
+> MLOps (Machine Learning Operations) is a paradigm,
+> including aspects like best practices, sets of concepts, as well as a
+> development culture when it comes to the end-to-end
+> conceptualization, implementation, monitoring, deployment, and
+> scalability of machine learning products. Most of all, it is an
+> engineering practice that leverages three contributing disciplines:
+> machine learning, software engineering (especially DevOps), and
+> data engineering. MLOps is aimed at productionizing machine
+> learning systems by bridging the gap between development (Dev)
+> and operations (Ops). Essentially, MLOps aims to facilitate the
+> creation of machine learning products by leveraging these
+> principles: CI/CD automation, workflow orchestration,
+> reproducibility; versioning of data, model, and code;
+> collaboration; continuous ML training and evaluation; ML
+> metadata tracking and logging; continuous monitoring; and
+> feedback loops
+
+## Open Challenges
+
+MLOps를 적용하기 위한 challenges 들을 3가지 카테고리로 묶어 제시한다.
+
+### Organizational Challenges
+
+ML을 사용하는 제품을 제공하면서, model-driven 의 영역에서 product-oriented 영역으로 문화가 바뀌어야 한다. 최근 데이터 중심의 AI 또한 모델 자체보다는 데이터에 더 많은 중점을 두는 편이다. ML 제품을 디자인할 때 역시 제품 중심적인 관점을 가져야 한다.
+
+많은 영역에 많은 인재가 필요하지만, 아키텍쳐, 데이터 엔지니어, ML 엔지니어, DevOps 엔지니어는 특히 부족하다. MLOps 가 데이터 사이언스 교육에 일반적으로 포함되지 않는 것에 연관이 있어 보인다. 데이터 사이언티스트 혼자는 MLOps의 목적을 달성할 수 없다. MLOps는 분명 협업의 형태를 띠지만, 대부분의 현업에서는 그렇지 못하다. 어려운 용어나 기술이 소통을 어렵게 한다.
+
+### ML System Challenges
+
+모델의 학습과 관련된 변동성이 큰 문제이다. 데이터의 다양성과 volumnious가 인프라 자원의 정확한 추정을 어렵게 한다. (CPU, RAM, GPU) 인프라의 확장가능성도 꽤 높을 것을 요구한다.
+
+### Operational Challenges
+
+서로 다른 스펙의 소프트웨어와 하드웨어가 서로 얽혀있기 때문에, ML을 수동으로 작동시키는 것은 매우 어렵다. 자동화를 해야하는데, 굳건한 (robust)한 자동화가 요구된다. 데이터가 끊임없이 변화하고, 생산되어 모델에 학습이 요구된다는 것 또한 자동화의 필요성을 대두시킨다. 마지막으로, 이 복잡한 workflow 내에서 문제가 발생했을 때 그 원인을 찾는 것 또한 어려운 일이 아닐 수 없다.
+
+## 결론
+
+- 머신러닝 모델의 가능성을 기반으로 많은 ML 제품들이 시장에 나오고 있지만, 학계에서는 모델의 발전과 성능개선에만 몰두하고 있다.
+- 이에 따라 많은 데이터 사이언티스트들이 수동으로 제품을 운영하고 있다. 이런 상황에서 MLOps의 중요성은 점점 커져가고 있다.
+- 우리의 MLOps에 대한 정의가 성공적인 ML 프로젝트에 기여하기를 바란다.
