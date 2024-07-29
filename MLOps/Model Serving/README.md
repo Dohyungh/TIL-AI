@@ -48,7 +48,37 @@
 - Version of Model (run으로 구분했다면 run-id, checkpoint 라고도 함)
 - **Custom logic**
 
-### Custom logic
+## Batching 전략
+
+Batching 자체만 하더라도 많은 최적화 serving 전략들이 있다. 가장 간단하게는 **batch size**(얼만큼 input이 쌓였을 때 처리할지)와 **max_latency**(얼만큼만 기다릴지)를 input의 빈도에 맞추어 설정해주어야 한다. 또한 내부적으로는 배치를 실행할 때, 배치 차원을 제외한 나머지 shape을 맞추어야 하기 때문에(정확히는 seq_len) **버킷팅 전략** (길이가 비슷한 seq 끼리 묶는다.)을 사용할 수도 있고, padding을 통해 seq_len 을 맞추고, 디코더의 마스킹을 통해 이를 공백으로 처리할 수 있다.
+
+### Iteration Batching
+
+나의 짧은 문장이 엄청나게 긴 문장과 묶이는 바람에 한참을 기다린다면 아주 화가 날 것이다.
+이를 해소하기 위해 Iteration Batching은 사용자에게 새롭게 수신한 Input이 있다면 Batch에 즉각적으로 포함시켜서 (~~쉽게 말해 막차 태운다~~), 그리고 생성이 끝난 요청이 있을 경우 응답을 즉시 반환함으로서 클라이언트의 대기시간을 최소로 한다. (~~이미 특허등록 된 기술이라고 한다~~)
+
+### 멀티 턴
+
+[HyperClova](https://engineering.clova.ai/posts/2022/03/hyperclova-part-3)가 발견했지만 직접 사용하지는 않은 것으로, 모델이 가용한 범위 내에서 이전에 등장한 토큰들을 모두 참조해 다음 토큰을 계산하게 되는 트랜스포머의 특징을 이용했다. 이전까지 등장한 토큰에 대한 계산결과를 캐싱해놓는데, 이때 조막만한 GPU의 메모리에 저장하는건 불가능하고, DRAM 에 데이터를 저장하는 과정에서 오히려 먼 곳을 찍고 오게 되면서 Trade-off가 발생했다고 한다.
+
+## FasterTransformer
+
+[CLOVA Engineering BLOG](https://engineering.clova.ai/posts/2022/01/hyperclova-part-1)에 따르면, 모델 학습을 위한 프레임워크와 모델 추론(inference)를 위한 프레임워크가 동일한 것에 분명 장점이 있지만, 모델의 크기가 커지면 커질수록 추론에 학습이 필요없다는 점을 최대한 활용해야 할 수도 있어 보인다. 즉, 추론만을 위해 이전과는 다른 프레임워크를 선택하는 것도 고려해야 한다. LLM 모델을 위한 FasterTransformer가 바로 그것이다. FasterTransformer의 가속 원리는 모델을 병렬화 (텐서와 파이프라인에서)하는 것이다. 역시나 python이 아닌 C++/CUDA로 작성됐으며, TensorFlow, Pytorch, Triton Backend API를 제공한다.
+
+[NVIDIA Technical BLOG](https://developer.nvidia.com/ko-kr/blog/increasing-inference-acceleration-of-kogpt-with-fastertransformer/)에서 그 구체적인 가속 방법을 소개한다.
+
+- Layer Fusion : 여러 레이어를 단일 레이어로 결합한다.
+- Multi-head attention Acceleration : 시퀀스에서 토큰 간의 관계를 연산하는데에 메모리 복사와 연산이 많이 필요하다. 이를 캐싱과 퓨즈커널로 최소화한다.
+
+  [ScatterLab BLOG](https://tech.scatterlab.co.kr/serving-architecture-3) 에서 Key/Value Caching 에 대한 언급이 나오는데, `.generate(..., use_cache=True)`의 형식으로 간단히 수행하는 것을 보아 목표하고자 하는 바는 비슷했던 것 같다.
+
+- GEMM Kernel autotuning : matmul 연산의 매개변수(Attachment 레이어, 크기 등)을 하드웨어 수준에서 실시간 벤치마크를 통해 최적화한다.
+
+- Lower precision: FP16, BF16, INT8 과 같은 낮은 정밀도의 데이터 타입으로 더 빠른 연산을 할 수 있다.
+
+  그러나 HyperClova 팀은 이것 때문에 오히려 오버플로우로 인한 버그를 겪어서 다시 FP32 자료형으로 돌아갔다고 한다.
+
+## Custom logic
 
 예를 들어, LLM 모델의 overconfident 성질 때문에 우리의 label에 others (기타등등) 을 추가해야 한다고 해보자. 그러면, 지금까지 학습한 모델의 마지막 층 FC layer size를 하나 늘려야 할 수 있다. 그런데, 과연 그게 최선일까? 데이터를 추가로 수집해야 할 수도 있고, 모델을 처음부터 다시 학습시켜야 할 수 있다.
 
