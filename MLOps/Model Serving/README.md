@@ -12,7 +12,9 @@
 
 - [새로운 루다를 지탱하는 모델 서빙 아키텍처 — 3편: 안정적인 LLM 서비스를 위한 서빙 최적화 기법](https://tech.scatterlab.co.kr/serving-architecture-3/)
 
-- [Full-stack-deeplearning : Lecture 5 - Deployment](https://fullstackdeeplearning.com/course/2022/lecture-5-deployment/)
+- [Full-stack-deeplearning : Lecture 5 - Deployment]
+
+  [Full-stack-deeplearning : Lecture 5 - Deployment]: (https://fullstackdeeplearning.com/course/2022/lecture-5-deployment/)
 
 ---
 
@@ -85,3 +87,148 @@ Batching 자체만 하더라도 많은 최적화 serving 전략들이 있다. �
 이런 경우, 우리의 Service 영역에서 모델의 softmax class의 값을 확인해 특정 threshold(예를 들어, 0.9)를 넘지 못하면 (즉, 그렇게 overconfident한 LLM이 그다지 confident하지 못했다면.) others로 label을 바꿔 줄 수 있다.
 
 > 최대한 모델과 비즈니스 로직(Product)을 분리하자.
+
+---
+
+# Deployment
+
+모델을 배포할 때가 모델이 제대로 작동하는지 볼 수 있는 가장 좋은 기회이다. 오프라인에서 모델을 테스트 할 때, 이미 배포가 됐을 때는 근본적인 측면에서 모델이 문제를 해결하고 있는지 아닌지 판단하기 쉽지 않다.
+
+## Build a Prototype To Interact With
+
+- 간단한 UI  
+  이 단계에서는 모델을 간단하게 사용해보고 피드백을 받는다.
+- URL 로 공유  
+  클라우드 버전을 사용해보자
+- 조금만 하자  
+  하루 이상 걸리지 않게 해보자
+
+<p align="center">
+<img src="./assets/prototypeexample.png" width="60%"/>
+</p>
+
+출처 : [Full-stack-deeplearning : Lecture 5 - Deployment]
+
+위와 같이 **model-in-service** 모형은 흔한 유형이지만, 장/단점이 있다.
+복잡한 작업을 할 떄에 이미 존재하는 인프라를 재사용하기만 된다는 장점이 있지만,
+
+- 웹 서버는 다른 언어로 쓰여 있을 가능성이 높다.
+- 모델 코드는 서버 코드보다 자주 바뀐다.  
+  특히 초기에 모델 코드는 계속 바뀌는데, 그럴 때마다 매번 모든 서버를 다시 배포하지 말자.
+- 큰 모델은 웹 서버 자원의 대부분을 차지한다.
+- 서버 하드웨어는 대부분 ML 작업에 최적화 되어 있지 않다. (~~GPU 있니?~~)
+- 모델과 어플리케이션의 확장성이 다르다.
+
+## Seperate your model and UI
+
+### Batch Prediction
+
+#### 모델의 결과를 Database에 저장하자.
+
+<p align="center">
+<img src="./assets/batchexample.png" width="60%"/>
+</p>
+
+추천 시스템 초기나 marketing automation 같은 시스템에서 모델을 간헐적으로 돌려서 쓰게 되는데, 모델에 input도 그리 많이 갱신되지 않을 때 사용하기 좋다.
+
+데이터 처리, 모델 로드, 추론, 추론 결과 저장의 모든 과정은 Directed Acyclic Graph workflow of data operations 이므로, `Dagster`, `Airflow`, `metaflow` 등을 쓸 수 있다.
+
+#### 장점
+
+- 구현이 쉽다. (학습 때 쓴거 또 쓰면 되니까)
+- 확장이 쉽다. (DB는 그러라고 만들어져서 오랫동안 발전돼왔으니까)
+- 많이 썼던 패턴이다.
+- DB가 마지막 어플리케이션이기 떄문에 추론결과를 가져오는게 빠르다.
+
+#### 단점
+
+- 복잡한 input 타입에는 확장성이 안좋다.
+- 유저가 최신 결과를 얻지 못한다.
+- 모델이 자주 고인다. (배치 과정에 문제가 생겨도 알기 어렵다.)
+
+### Model-as-Service
+
+<p align="center">
+<img src="./assets/masexample.png" width="60%"/>
+</p>
+
+모델에게 요청을 던지고, 결과를 받는다. 클라이언트에서 보낼 수도 있고, (Front) 서버에서 보낼 수도 있다. (Back)
+
+- Dependability : 모델의 버그가 웹에 영향을 주지 않는다.
+- Scalability : 모델에 적합한 하드웨어를 선택하고, 확장할 수 있다.
+- Flexibility : 다양한 application에서 모델을 재사용 할 수 있다.
+
+위의 장점들이 있지만, 요청을 보내야 하기 때문에 latency가 어쨌든 하나 늘어난다. 또, 새롭게 분리된 서비스가 생기기 때문에 인프라의 복잡도도 올라간다.
+
+아직은 형식에 정해진 틀이 없다.
+
+- 구글 클라우드
+
+```JSON
+{"instances": [
+  {"values":[1,2,3,4], "key" :1},
+  {"values":[5,6,7,8], "key" :2}
+]}
+```
+
+- Azure
+
+```JSON
+{
+  "data":
+  [<model-specific-data-structure>]
+}
+```
+
+- AWS Sagemaker
+
+```JSON
+{
+  "instances": [
+    {"in0":[863],"in1":[882]},
+    {"in0":[278], "in1":[311]},
+    {"in0":[705], "in1":[578]},
+  ]
+}
+```
+
+#### Dependency
+
+의존성 문제. 가장 기본적으로는 PyTorch 버전 같은 것이 있다.
+
+이에 독립적인 어플리케이션을 만들기 위한 두가지 방법이 있는데
+
+1. 모델 의존도를 제한한다.
+2. 컨테이너로 감싼다.
+
+1번은 [ONNX-the Open Neural Network Exchange](https://onnx.ai/) 같은 곳에서 자유로운 AI 모델 적용을 위해 애쓰고 있으나 아직 갈 길이 멀기 때문에 2번 대안이 주로 쓰인다.
+
+Docker에 대한 learning curve를 낮추고 싶다면, [Cog](https://github.com/replicate/cog), [BentoM](https://github.com/bentoml/BentoML), [Truss](https://github.com/trussworks) 같은 오픈 소스 패키지를 쓸 수도 있다.
+
+## Performance Optimization
+
+> [Performance monitoring의 좋은 사례](https://github.com/okanlv/fsdl-full-stack-stable-diffusion-2022)
+
+- GPU
+- Concurrency
+- Model Distillation
+- Quantization
+- Caching
+- Batching
+- Sharing GPU
+- library : [Ray Serve](https://docs.ray.io/en/latest/serve/index.html)
+
+## Move to the Edge
+
+<p align="center">
+<img src="./assets/toedge.png" width="60%"/>
+</p>
+
+Accuracy 와 latency 사이에서 고민해보자.
+
+- TensorRT
+- MLKit and CoreML
+- PyTorch Mobile
+- TFLite
+- TensorFlow JS
+- Apache TVM
