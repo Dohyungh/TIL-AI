@@ -158,11 +158,17 @@ kubectl version --client
 #!/bin/bash
 # init k8s
 
+#/etc/sysctl.conf를 열어 net.ipv4.ip_forward=1행의 주석을 제거
+sudo sysctl -p
+
+
 ## 밑에 kubeadm init 에러나면
 sudo mv /etc/kubernetes/manifests/kube-apiserver.yaml \
 /etc/kubernetes/manifests/kube-controller-manager.yaml \
 /etc/kubernetes/manifests/kube-scheduler.yaml \
 /etc/kubernetes/manifests/etcd.yaml ./
+
+sudo swapoff -a
 
 sudo kubeadm init phase kubelet-start
 
@@ -172,15 +178,25 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-
 kubectl cluster-info
 
 # CNI
-kubectl create -f https://raw.githubusercontent.com/cilium/cilium/v1.6/install/kubernetes/quick-install.yaml
+
+CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
+CLI_ARCH=amd64
+if [ "$(uname -m)" = "aarch64" ]; then CLI_ARCH=arm64; fi
+curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
+sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
+rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+
+cilium install --version 1.16.1
+
 kubectl get pods -n kube-system --selector=k8s-app=cilium
 
-kubectl taint nodes --all node-role.kubernetes.io/master-
-kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/1.0.0-beta6/nvidia-device-plugin.yml
+kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
+
+kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.16.1/deployments/static/nvidia-device-plugin.yml
 
 
 #test GPU
@@ -195,15 +211,13 @@ kubectl get sc
 
 # install kusomize
 #
-if [ ! -f /usr/local/bin/kusomize ]
-  then
-    echo "kustomize"
-    wget https://github.com/kubernetes-sigs/kustomize/releases/download/v3.2.0/kustomize_3.2.0_linux_amd64
-    mv ./kustomize_3.2.0_linux_amd64 kustomize
-    sudo chmod 777 kustomize
-    sudo mv kustomize /usr/local/bin/kustomize
-fi
 
+curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+
+export PATH=$PATH:$HOME
+export PATH=$PATH:$HOME/kustomize
+
+sudo chmod +x $HOME/kustomize
 
 # autocomplete k8s
 shellname=`echo $SHELL | rev | cut -d '/' -f1 | rev`
@@ -219,4 +233,32 @@ if [ $? = 1 ]
     echo 'complete -F __start_kubectl k' >>$shellconf
 fi
 $SHELL
+```
+
+## 6. install kubeflow
+
+```r
+cd ~
+git clone https://github.com/kubeflow/manifests.git
+cd manifests/
+
+git checkout v1.8-branch
+
+kustomize build common/cert-manager/cert-manager/base | kubectl apply -f -
+echo "Waiting for cert-manager to be ready ..."
+kubectl wait --for=condition=ready pod -l 'app in (cert-manager,webhook)' --timeout=180s -n cert-manager
+kubectl wait --for=jsonpath='{.subsets[0].addresses[0].targetRef.kind}'=Pod endpoints -l 'app in (cert-manager,webhook)' --timeout=180s -n cert-manager
+
+while ! kustomize build example | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 20; done
+
+# watch kubectl get pods -A 다 running 될 때 까지 기다려
+
+kubectl port-forward --address=0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80
+
+
+# 포트 포워딩
+
+# gateway.yaml
+# certificate.yaml 적용 해서 443 포트에 포워딩 하면 끝
+
 ```
