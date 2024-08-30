@@ -87,7 +87,7 @@ curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.li
 sudo apt-get -y update
 sudo apt-get -y install nvidia-docker2
 sudo systemctl restart docker
-sudo docker run --runtime nvidia nvidia/cuda:11.8.0-base-ubuntu20.04 /usr/bin/nvidia-smi
+sudo docker run --gpus all --runtime nvidia nvidia/cuda:11.8.0-base-ubuntu20.04 /usr/bin/nvidia-smi
 
 
 sudo bash -c 'cat <<EOF > /etc/docker/daemon.json
@@ -253,7 +253,7 @@ while ! kustomize build example | kubectl apply -f -; do echo "Retrying to apply
 
 # watch kubectl get pods -A 다 running 될 때 까지 기다려
 
-kubectl port-forward --address=0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80
+kubectl port-forward --address=0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:443
 
 
 # 포트 포워딩
@@ -262,3 +262,142 @@ kubectl port-forward --address=0.0.0.0 svc/istio-ingressgateway -n istio-system 
 # certificate.yaml 적용 해서 443 포트에 포워딩 하면 끝
 
 ```
+
+## 7. port forwarding
+
+```r
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.3/cert-manager.yaml
+```
+
+kubeflow는 기본적으로 https 접근을 지원하기 때문에, http : 80 번 포트로의 접근을 https: 443 포트로 바꿔주고, https 인증을 해주어야 한다.
+
+```yaml
+### gateway.yaml
+
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: kubeflow-gateway
+  namespace: kubeflow
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - hosts:
+        - "*"
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+      # Upgrade HTTP to HTTPS
+      tls:
+        httpsRedirect: true
+    - hosts:
+        - "*"
+      port:
+        name: https
+        number: 443
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: kubeflow-ingressgateway-certs
+```
+
+```yaml
+### certificate.yaml
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kubeflow-ingressgateway-certs
+  namespace: istio-system
+spec:
+  commonName: example.com #Domain name
+  issuerRef:
+    kind: ClusterIssuer
+    name: kubeflow-self-signing-issuer
+  secretName: kubeflow-ingressgateway-certs
+```
+
+- certificate.yaml 파일의 secretName 이 gateway.yaml 파일의 credentialName 과 일치하는 것을 볼 수 있다. (kubeflow-ingressgateway-certs)
+
+- [istio gateway 흐름](https://do-hansung.tistory.com/85) 에 따르면 트래픽의 흐름은 대략적으로 다음과 같다. 이 블로그에서 TLS 인증 방법에 대해서 잘 설명해주고 있다.
+
+  - `Client` -> `istio-ingressgateway` -> `gateway` -> `virtual service` -> `svc` -> `pod`
+
+- 직접 Key를 생성하고 인증방식을 제대로 구현하면 해당 부분에서 여러 문제가 생긴다.
+  - [istio https redirect 설정 상태에서 certmanager 인증서 발급법](https://lcc3108.github.io/articles/2021-04/istio-https-redirect-certmanager-renew)
+    - 이 문제는, 모든 http 요청을 https 로 바꿔버리면서 생겼다.
+  - [istio gateway tls 404 에러해결](https://minhan2.tistory.com/entry/istio-gateway-tls-404-%EC%97%90%EB%9F%AC%ED%95%B4%EA%B2%B0)
+    - 이 문제는 같은 인증서를 다른 곳에서 중복해 사용하면서 생겼다.
+
+## 8. Trouble Shooting
+
+### GPU 인식 안됨
+
+```r
+Name:               desktop-mmcqpv1
+Roles:              control-plane
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=desktop-mmcqpv1
+                    kubernetes.io/os=linux
+                    node-role.kubernetes.io/control-plane=
+                    node.kubernetes.io/exclude-from-external-load-balancers=
+Annotations:        kubeadm.alpha.kubernetes.io/cri-socket: unix:///var/run/containerd/containerd.sock
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Wed, 28 Aug 2024 16:55:28 +0900
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  desktop-mmcqpv1
+  AcquireTime:     <unset>
+  RenewTime:       Fri, 30 Aug 2024 09:09:16 +0900
+Conditions:
+  Type                 Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----                 ------  -----------------                 ------------------                ------                       -------
+  NetworkUnavailable   False   Wed, 28 Aug 2024 16:56:56 +0900   Wed, 28 Aug 2024 16:56:56 +0900   CiliumIsUp                   Cilium is running on this node
+  MemoryPressure       False   Fri, 30 Aug 2024 09:09:07 +0900   Fri, 30 Aug 2024 08:58:45 +0900   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure         False   Fri, 30 Aug 2024 09:09:07 +0900   Fri, 30 Aug 2024 08:58:45 +0900   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure          False   Fri, 30 Aug 2024 09:09:07 +0900   Fri, 30 Aug 2024 08:58:45 +0900   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready                True    Fri, 30 Aug 2024 09:09:07 +0900   Fri, 30 Aug 2024 09:09:07 +0900   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  172.26.42.180
+  Hostname:    desktop-mmcqpv1
+Capacity:
+  cpu:                20
+  ephemeral-storage:  263112772Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             16146808Ki
+  pods:               110
+Allocatable:
+  cpu:                20
+  ephemeral-storage:  242484730274
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             16044408Ki
+  pods:               110
+System Info:
+  Machine ID:                 69e3d8f35e3145c983d85a53af2ee225
+  System UUID:                69e3d8f35e3145c983d85a53af2ee225
+  Boot ID:                    69c1ff54-6252-4c34-a02f-3b91494da184
+  Kernel Version:             5.15.153.1-microsoft-standard-WSL2
+  OS Image:                   Ubuntu 20.04.6 LTS
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.7.20
+  Kubelet Version:            v1.29.7
+  Kube-Proxy Version:         v1.29.7
+PodCIDR:                      10.217.0.0/24
+PodCIDRs:                     10.217.0.0/24
+Non-terminated Pods:          (63 in total)
+```
+
+`nvidia.com/gpu : 1` 과 같은 항목이 표시되질 않는다. 따라서, Kubeflow 에서 notebook을 만들 때 gpu를 요청했을 때 제대로 생성되질 않는다.
+
+docker desktop 에서 Integration을 끄고, 자체 Docker를 이용하도록 바꾸면서 기존에 실행했던 컨테이너가 실행되지 않고 있었다.
+
+다시 run 시키고, 확인했는데 여전히 nvidia.com/gpu 항목이 없어서 계속해서 찾아보고 있는 중이다.
