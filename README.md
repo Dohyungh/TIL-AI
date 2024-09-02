@@ -16,3 +16,4 @@
 | ~ 8/11      | Triton 모델 serving 서버 띄우기, 모델 Server (on Docker) 구성                                                      |
 | ~ 8/13      | KubeFlow 학습 TIL                                                                                                  |
 | ~ 9/1       | Kubernetes 학습 TIL                                                                                                |
+| 9/2 ~ 9/15  | (격일) TIL-DataScience-Topic Modeling TIL 과 Kubeflow TIl                                                          |
