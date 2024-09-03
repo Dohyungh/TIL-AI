@@ -88,11 +88,6 @@ sudo apt-get -y update
 sudo apt-get -y install nvidia-docker2
 sudo systemctl restart docker
 
-# sudo mkdir /usr/bin/nvidia-smi
-
-# # 이거 에러나긴 해
-# sudo cp /usr/lib/wsl/lib/nvidia-smi /usr/bin/nvidia-smi chmod ogu+x /usr/bin/nvidia-smi
-
 sudo docker run --rm --runtime=nvidia --gpus all nvidia/cuda:11.8.0-base-ubuntu20.04 nvidia-smi
 
 
