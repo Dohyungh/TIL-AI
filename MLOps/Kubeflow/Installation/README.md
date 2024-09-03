@@ -87,7 +87,13 @@ curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.li
 sudo apt-get -y update
 sudo apt-get -y install nvidia-docker2
 sudo systemctl restart docker
-sudo docker run --gpus all --runtime nvidia nvidia/cuda:11.8.0-base-ubuntu20.04 /usr/bin/nvidia-smi
+
+# sudo mkdir /usr/bin/nvidia-smi
+
+# # 이거 에러나긴 해
+# sudo cp /usr/lib/wsl/lib/nvidia-smi /usr/bin/nvidia-smi chmod ogu+x /usr/bin/nvidia-smi
+
+sudo docker run --rm --runtime=nvidia --gpus all nvidia/cuda:11.8.0-base-ubuntu20.04 nvidia-smi
 
 
 sudo bash -c 'cat <<EOF > /etc/docker/daemon.json
@@ -161,6 +167,13 @@ kubectl version --client
 #/etc/sysctl.conf를 열어 net.ipv4.ip_forward=1행의 주석을 제거
 sudo sysctl -p
 
+#/etc/containerd/config.toml 에서
+# [plugins]
+#   [plugins."io.containerd.grpc.v1.cri"]
+#     [plugins."io.containerd.grpc.v1.cri".containerd]
+#       default_runtime_name = "nvidia" ## 이거 설정
+# sudo systemctl restart docker
+
 
 ## 밑에 kubeadm init 에러나면
 sudo mv /etc/kubernetes/manifests/kube-apiserver.yaml \
@@ -185,7 +198,7 @@ kubectl cluster-info
 CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
 CLI_ARCH=amd64
 if [ "$(uname -m)" = "aarch64" ]; then CLI_ARCH=arm64; fi
-curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+sudo curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
 sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
 sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
 rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
@@ -212,7 +225,7 @@ kubectl get sc
 # install kusomize
 #
 
-curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+sudo curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
 
 export PATH=$PATH:$HOME
 export PATH=$PATH:$HOME/kustomize
@@ -252,8 +265,6 @@ kubectl wait --for=jsonpath='{.subsets[0].addresses[0].targetRef.kind}'=Pod endp
 while ! kustomize build example | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 20; done
 
 # watch kubectl get pods -A 다 running 될 때 까지 기다려
-
-kubectl port-forward --address=0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:443
 
 
 # 포트 포워딩
@@ -317,6 +328,10 @@ spec:
     kind: ClusterIssuer
     name: kubeflow-self-signing-issuer
   secretName: kubeflow-ingressgateway-certs
+```
+
+```r
+kubectl port-forward --address=0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:443
 ```
 
 - certificate.yaml 파일의 secretName 이 gateway.yaml 파일의 credentialName 과 일치하는 것을 볼 수 있다. (kubeflow-ingressgateway-certs)
@@ -401,3 +416,25 @@ Non-terminated Pods:          (63 in total)
 docker desktop 에서 Integration을 끄고, 자체 Docker를 이용하도록 바꾸면서 기존에 실행했던 컨테이너가 실행되지 않고 있었다.
 
 다시 run 시키고, 확인했는데 여전히 nvidia.com/gpu 항목이 없어서 계속해서 찾아보고 있는 중이다.
+
+### 해결!
+
+`etc/containerd/config.toml` 파일에서 다음과 같이 수정했다.
+
+수정 전
+
+```r
+[plugins]
+  [plugins."io.containerd.grpc.v1.cri"]
+    [plugins."io.containerd.grpc.v1.cri".containerd]
+      default_runtime_name = "runc"
+```
+
+수정 후
+
+```r
+[plugins]
+  [plugins."io.containerd.grpc.v1.cri"]
+    [plugins."io.containerd.grpc.v1.cri".containerd]
+      default_runtime_name = "nvidia"
+```
