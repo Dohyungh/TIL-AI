@@ -1,4 +1,4 @@
-FROM /library/kubeflownotebookswg/jupyter-pytorch-cuda-full:v1.8.0
+FROM kubeflownotebookswg/jupyter-pytorch-cuda-full:v1.8.0
 USER root 
 
 # Nvidia GPG Public Key 교체
