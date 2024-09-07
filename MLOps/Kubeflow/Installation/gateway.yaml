@@ -25,3 +25,12 @@ spec:
       tls:
         mode: SIMPLE
         credentialName: kubeflow-ingressgateway-certs
+    - hosts:
+        - "*"
+      port:
+        name: https
+        number: 8888
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: kubeflow-ingressgateway-certs

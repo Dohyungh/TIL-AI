@@ -11,11 +11,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && usermod -aG sudo ${NB_USER} \
   && echo ${NB_USER}:${NB_USER} | chpasswd \
   && echo "${NB_USER} ALL=(root) NOPASSWD:SETENV: /init" >> /etc/sudoers
+# jovyan 의 비밀번호는 jovyan으로 설정됩니다.
 
 # install - requirements.txt
 # COPY requirements.txt requirements.txt
 # RUN pip3 install -r requirements.txt
 EXPOSE 8888
+EXPOSE 8889
 USER jovyan
 
 ENV NB_USER $NB_USER

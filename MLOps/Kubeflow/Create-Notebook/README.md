@@ -136,3 +136,32 @@ nameserver 8.8.4.4  # Google DNS
 ![alt text](./assets/image4.png)
 
 노트북이 생성은 됐는데, 들어가지지 않는다..
+
+### 해결
+
+```r
+[I 2024-09-07 05:30:47.346 ServerApp] The port 8888 is already in use, trying another port.
+[I 2024-09-07 05:30:47.346 ServerApp] Serving notebooks from local directory: /home/jovyan
+[I 2024-09-07 05:30:47.346 ServerApp] Jupyter Server 2.9.1 is running at:
+[I 2024-09-07 05:30:47.346 ServerApp] http://test-custom-image-0:8889/notebook/dohyung/test-custom-image/lab
+[I 2024-09-07 05:30:47.346 ServerApp]     http://127.0.0.1:8889/notebook/dohyung/test-custom-image/lab
+```
+
+왜 때문인지 모르겠지만 8888 포트가 사용중이어서 8889 포트로 jupytor notebook이 열리고 있었다는 것을 알았다.
+
+Dockerfile에서 8889 포트를 열어주고,
+
+```r
+EXPOSE 8889
+```
+
+kubectl로 포트포워딩 해주면
+
+```r
+kubectl port-forward --address=0.0.0.0 pod/test-custom-image-0 -n dohyung 8080:8889
+```
+
+`http://localhost:8080/notebook/dohyung/test-custom-image/` 의 주소로 notebook에 접속할 수 있다.
+(https 가 아닌 http 임에 주의하자.)
+
+[seokii의 블로그](https://seokii.tistory.com/221#%EC%BB%A4%EC%8A%A4%ED%85%80_%EC%9D%B4%EB%AF%B8%EC%A7%80_%EC%84%9C%EB%B2%84_%EC%83%9D%EC%84%B1%EA%B3%BC_%EC%98%A4%EB%A5%98_%ED%95%B4%EA%B2%B0) 에 보면 노트북을 재생성하면 에러가 사라졌다고 하는데, 나는 사라지지 않는다..
