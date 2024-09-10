@@ -273,6 +273,9 @@ while ! kustomize build example | kubectl apply -f -; do echo "Retrying to apply
 
 ```r
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.3/cert-manager.yaml
+
+kubectl apply -f ./certificate.yaml
+kubectl apply -f ./gateway.yaml
 ```
 
 kubeflow는 기본적으로 https 접근을 지원하기 때문에, http : 80 번 포트로의 접근을 https: 443 포트로 바꿔주고, https 인증을 해주어야 한다.
