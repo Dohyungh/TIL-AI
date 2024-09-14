@@ -252,7 +252,7 @@ cd manifests/
 
 git checkout v1.8-branch
 
-kustomize build common/cert-manager/cert-manager/base | kubectl apply -f -
+kustomize build ~/manifests/common/cert-manager/cert-manager/base | kubectl apply -f -
 echo "Waiting for cert-manager to be ready ..."
 kubectl wait --for=condition=ready pod -l 'app in (cert-manager,webhook)' --timeout=180s -n cert-manager
 kubectl wait --for=jsonpath='{.subsets[0].addresses[0].targetRef.kind}'=Pod endpoints -l 'app in (cert-manager,webhook)' --timeout=180s -n cert-manager
