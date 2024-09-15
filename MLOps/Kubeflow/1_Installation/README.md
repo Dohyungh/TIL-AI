@@ -180,7 +180,11 @@ sudo swapoff -a
 
 sudo kubeadm init phase kubelet-start
 
-sudo kubeadm init --pod-network-cidr=10.217.0.0/16
+# CNI 에 따라 주소가 다르다.
+# Calico pod-network-cidr=192.168.0.0/16
+# Flannel pod-network-cidr=10.244.0.0/16
+# Cilium pod-network-cidr=10.1.1.0/24
+sudo kubeadm init --pod-network-cidr=10.1.1.0/24
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
