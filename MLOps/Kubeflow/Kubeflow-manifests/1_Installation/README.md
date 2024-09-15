@@ -254,7 +254,8 @@ cd ~
 git clone https://github.com/kubeflow/manifests.git
 cd manifests/
 
-git checkout v1.8-branch
+# kubernetes 1.29 > 이면 1.9 이상의 kubeflow를 설치해야 함
+git checkout v1.9-branch
 
 kustomize build ~/manifests/common/cert-manager/cert-manager/base | kubectl apply -f -
 echo "Waiting for cert-manager to be ready ..."
