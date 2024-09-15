@@ -72,11 +72,11 @@ SESSION : MTcyNjAxMTE1OXxOd3dBTkVGS05FRllXVWhWVmxaS1ExUXpTbE5HVDFSYU5FaEpURUZITk
 # 직접 클러스터에 매다 꽂아서 성공한 요청
 curl -v -H "Host: sklearn-iris.kserve-test.svc.cluster.local" -H "Content-Type: application/json" -H "Cookie: authservice_session=MTcyNjAxMTE1OXxOd3dBTkVGS05FRllXVWhWVmxaS1ExUXpTbE5HVDFSYU5FaEpURUZITkZKQ1ZFZEROekpDU1RkVlJ6VkZWMGRKV2s1WFZEY3lNa0U9fNOgH7xOjYaedrJR50gDDjrqVj_TPqYtmwiFaTKGJnBq" http://10.0.0.147:8080/v1/models/sklearn-iris:predict -d @./iris-input.json
 
-
+curl -v -H "Host: sklearn-iris.kubeflow-user-example-com.svc.cluster.local" -H "Content-Type: application/json" -H "Cookie: authservice_session=MTcyNjAxMTE1OXxOd3dBTkVGS05FRllXVWhWVmxaS1ExUXpTbE5HVDFSYU5FaEpURUZITkZKQ1ZFZEROekpDU1RkVlJ6VkZWMGRKV2s1WFZEY3lNa0U9fNOgH7xOjYaedrJR50gDDjrqVj_TPqYtmwiFaTKGJnBq" http://sklearn-iris.kubeflow-user-example-com.svc.cluster.local/v1/models/sklearn-iris:predict -d @./iris-input.json
 
 # Ingress-gateway 를 NodePort로 설정하고, Tutorial을 따라한다.
 # 301 Moved Permanently 가 뜬다.
-curl -v -H "Host: sklearn-iris.kserve-test.svc.cluster.local" -H "Content-Type: application/json" -H "Cookie: authservice_session=MTcyNjAxMTE1OXxOd3dBTkVGS05FRllXVWhWVmxaS1ExUXpTbE5HVDFSYU5FaEpURUZITkZKQ1ZFZEROekpDU1RkVlJ6VkZWMGRKV2s1WFZEY3lNa0U9fNOgH7xOjYaedrJR50gDDjrqVj_TPqYtmwiFaTKGJnBq" "http://172.26.42.180:30749/v1/models/sklearn-iris:predict" -d @./iris-input.json --insecure
+curl -v -H "Host: sklearn-iris.kserve-test.svc.cluster.local" -H "Content-Type: application/json" -H "Cookie: authservice_session=MTcyNjA5NjEwMXxOd3dBTkVwWFVUZFhNbEpNVTFCR1dEYzBTVVZLVFVnMFRVeFRXVTh5U2xaRlZUVXlTMVkyVlROV1YxbEJRVlJOVlRaTFRFZERWRkU9fEPdjG6TaqJ0rbM6wQJRdcAtJ6dNpEXK6bATcaD8Z5D2" "http://172.26.42.180:30749/v1/models/sklearn-iris:predict" -d @./iris-input.json --insecure
 ```
 
 분명 Ingressgateway 에서 요청을 받으면 해당 클러스터로 쏴줘야하는데,
@@ -91,4 +91,27 @@ curl -v -H "Host: sklearn-iris.kserve-test.svc.cluster.local" -H "Content-Type: 
 
 - 인증이 번거롭다면, 필요한 서비스의 `deployment.apps` 를 수정해 APP_SECURE_COOKIES 를 "False" 로 지정해서 생략할 수 있다.
 
--
+---
+
+## KServe의 Model-web-app
+
+```
+Architecture
+The web app includes the following resources:
+
+A Deployment for running the backend server, and serving the static frontend files
+A Service for configuring the incluster network traffic
+A ServiceAccount and ClusterRole{Binding} to give the necessary permissions to the web app’s Pod
+A VirtualService for exposing the app via the cluster’s Istio Ingress Gateway
+SubjectAccessReviews
+The web app has a mechanism for performing authentication and authorization checks, to ensure that user actions are compliant with the cluster’s RBAC, which is only enabled in the kubeflow manifests of the app. This mechanism can be toggled by leveraging the APP_DISABLE_AUTH: "True" | "False" ENV Var.
+
+This mechanism is only enabled in the kubeflow manifests since in a Kubeflow installation all requests that end up in the web app’s Pod will also contain a custom header that denotes the user. In a Kubeflow installation there’s an authentication component in front of the cluster that ensures only logged in users can access the cluster’s services. In the standalone mode such a component might not always be deployed.
+
+The web app will be using the value from this custom header to extract the name of the K8s user that made the request. Then it will create a SubjectAccessReview to check if the user has permissions to perform the specific action, for example deleting an InferenceService in a namespace.
+
+Tip
+If you are port-forwarding the app via kubectl port-forward then you will need to set APP_DISABLE_AUTH=“True” in the web app’s Deployment. When port-forwarding the authentication header will not be set, which will result in the web app raising 401 errors.
+```
+
+인증 과정이 문제인지, 패킷 포워딩이 문제인지 모르겠다.
