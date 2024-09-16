@@ -39,3 +39,19 @@ sudo kubeadm init --pod-network-cidr=10.217.0.0/16
 sudo kubeadm init --pod-network-cidr=10.1.1.0/24
 
 ```
+
+### cilium
+
+```r
+cilium status --wait
+```
+
+위 명령어로 상태를 지켜보는데 계속해서 operator가 error 이길래 살펴보았다.
+
+![alt text](image-1.png)
+
+[naver cloud platform](https://guide-gov.ncloud-docs.com/docs/k8s-troubleshoot-common)
+
+![alt text](image-2.png)
+
+control-plane 하나이기 때문에 의도된 바라고 한다.
