@@ -180,7 +180,11 @@ sudo swapoff -a
 
 sudo kubeadm init phase kubelet-start
 
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+# CNI 에 따라 주소가 다르다.
+# Calico pod-network-cidr=192.168.0.0/16
+# Flannel pod-network-cidr=10.244.0.0/16
+# Cilium pod-network-cidr=10.1.1.0/24
+sudo kubeadm init --pod-network-cidr=10.1.1.0/24
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -248,7 +252,8 @@ cd ~
 git clone https://github.com/kubeflow/manifests.git
 cd manifests/
 
-git checkout v1.8-branch
+# kubernetes 1.29 > 이면 1.9 이상의 kubeflow를 설치해야 함
+git checkout v1.9-branch
 
 kustomize build ~/manifests/common/cert-manager/cert-manager/base | kubectl apply -f -
 echo "Waiting for cert-manager to be ready ..."
