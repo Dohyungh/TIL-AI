@@ -144,8 +144,9 @@ wget https://github.com/containerd/containerd/releases/download/v1.7.14/containe
 sudo apt-get install -y kubelet=1.29.7-1.1 kubeadm=1.29.7-1.1 kubectl=1.29.7-1.1 --allow-downgrades --allow-chang
 e-held-packages
 
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+# 버전 수정 1.26
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.26/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.26/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt-mark hold kubelet kubeadm kubectl
 kubeadm version
@@ -184,7 +185,7 @@ sudo kubeadm init phase kubelet-start
 # Calico pod-network-cidr=192.168.0.0/16
 # Flannel pod-network-cidr=10.244.0.0/16
 # Cilium pod-network-cidr=10.1.1.0/24
-sudo kubeadm init --pod-network-cidr=10.1.1.0/24
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
