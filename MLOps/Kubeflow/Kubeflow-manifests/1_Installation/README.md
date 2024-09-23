@@ -141,13 +141,12 @@ sudo apt-get update
 
 wget https://github.com/containerd/containerd/releases/download/v1.7.14/containerd-1.7.14-linux-amd64.tar.gz
 
-sudo apt-get install -y kubelet=1.29.7-1.1 kubeadm=1.29.7-1.1 kubectl=1.29.7-1.1 --allow-downgrades --allow-chang
-e-held-packages
+sudo apt-get install -y kubelet=1.29.7-1.1 kubeadm=1.29.7-1.1 kubectl=1.29.7-1.1 --allow-downgrades --allow-change-held-packages
 
 # 버전 수정 1.26
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.26/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.26/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-
+sudo apt-get update
 sudo apt-mark hold kubelet kubeadm kubectl
 kubeadm version
 kubelet --version
@@ -227,10 +226,8 @@ kubectl get sc
 
 sudo curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
 
-export PATH=$PATH:$HOME
-export PATH=$PATH:$HOME/kustomize
-
-sudo chmod +x $HOME/kustomize
+sudo install -o root -g root -m 0755 kustomize /usr/local/bin/kustomize
+sudo chmod +x /home/ubuntu/manifests/kustomize
 
 # autocomplete k8s
 shellname=`echo $SHELL | rev | cut -d '/' -f1 | rev`
